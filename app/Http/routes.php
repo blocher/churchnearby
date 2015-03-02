@@ -19,3 +19,7 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+Route::resource('church', 'ChurchController');
+Route::resource('denomination', 'DenominationController');
+Route::resource('region', 'RegionController');
