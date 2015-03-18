@@ -17,7 +17,7 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 
 		$url = $this->url . '/' . $letter;
 		$response = $this->get($url);
-		$html = $html = HtmlDomParser::str_get_html($response);
+		$html  = HtmlDomParser::str_get_html($response);
 
 		$last_page_link = $last_page_url_parts = $last_page_query_string = $last_page_query_parms = $last_page = '';
 		foreach($html->find('ul.pagination li.last a') as $last_page_link) {
@@ -36,14 +36,18 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 
 	private function scrapePage($letter,$page) {
 
-		$url = $this->url . '/' . $letter . '&page=' . $page;
-		echo $url."\n";
-
-		//now let's get some churches then scrap call scrapeChurch
-
+		$url = $this->url . '/' . $letter . '?page=' . $page;
+		$response = $this->get($url);
+		$html  = HtmlDomParser::str_get_html($response);
+		foreach($html->find('td.views-field-title a') as $church) {
+			$url = $church->href;
+			$this->scrapeChurch($url);
+		}
 	}
 
-	private function scrapeChurch() {
+	private function scrapeChurch($url) {
+
+		echo $url."\n";
 
 	}
 
