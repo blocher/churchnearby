@@ -49,7 +49,7 @@ class Scraper extends Command {
 
 		$scraper = new $class;
 
-		$scraper->test();
+		$scraper->scrape();
 	}
 
 	/**
