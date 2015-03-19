@@ -12,8 +12,10 @@ class CreateDenominationsTable extends Migration {
 			$table->timestamps();
 			$table->softDeletes();
 			$table->string('name', 256);
+			$table->string('slug', 256);
 			$table->string('url', 255);
 			$table->string('region_name')->nullable()->index();
+			$table->string('region_name_plural')->nullable()->index();
 		});
 	}
 
