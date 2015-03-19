@@ -4,6 +4,8 @@ use Sunra\PhpSimple\HtmlDomParser;
 
 abstract class Scraper {
 
+	protected $church_html = '';
+
 	/**
 	* Send a POST requst using cURL
 	* @param string $url to request
@@ -103,5 +105,41 @@ abstract class Scraper {
 	}
 
 	abstract function scrape();
+	abstract function getExternalID();
+	abstract function getLeader();
+	abstract function getLatitude();
+	abstract function getLongitude();
+	abstract function getName();
+	abstract function getURL();
+	abstract function getAddress();
+	abstract function getState();
+	abstract function getCity();
+	abstract function getZip();
+	abstract function getEmail();
+	abstract function getPhone();
+	abstract function getTwitter();
+	abstract function getFacebook();
+
+	public function saveChurch() {
+
+		$id = $this->getExternalID();
+		$church = \App\Models\Church::firstOrCreate(array('externalid' => $id));
+		$church->externalid = $id;
+		$church->leader = $this->getLeader();
+		$church->latitude = $this->getLatitude();
+		$church->longitude = $this->getLongitude();
+		$church->name = $this->getName();
+		$church->url = $this->getURL();
+		$church->state = $this->getState();
+		$church->city = $this->getCity();
+		$church->zip = $this->getZip();
+		$church->email = $this->getEmail();
+		$church->phone = $this->getPhone();
+		$church->twttier = $this->getTwitter();
+		$church->facebook = $this->getFacebook();
+		$church->save();
+		dd($church);
+
+	}
 
 }
