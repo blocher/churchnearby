@@ -42,9 +42,10 @@ class Scraper extends Command {
 		$class = '\App\Scrapers\ChurchScraper\Denominations\\'.$denomination.'Scraper';
 		
 		if (class_exists($class)) {
-			$this->info ('Let\'s scrape');
+			$this->info ('Let\'s begin!');
 		} else {
 			$this->error ('The denomination you entered is not available.');
+			return;
 		}
 
 		$scraper = new $class;
