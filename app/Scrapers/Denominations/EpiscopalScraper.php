@@ -7,6 +7,8 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 	private $url = 'http://www.episcopalchurch.org';
 	private $directory = '/browse/parish';
 
+	protected $denomination_slug = 'episcopal';
+
 	public function scrape() {
 		$letters = range('A','Z');
 		foreach ($letters as $letter) {
@@ -49,19 +51,30 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 	private function getLatitudeandLongitude() {
 		foreach($this->church_html->find('.location a') as $item) {
 
+			$latlng = array();
+			$latlng['latitude'] = $latlng['longitude'] = '';
+
+			if (!isset($item->href)) {
+				return $latlng;
+			}
+
 			$link = $item->href;
+
+			if (empty($link)) {
+				return $latlng;
+			}
+
 			$link = explode('=',$link);
 			$link = $link[1];
 			$link = explode('+',$link);
 		
-			$latlng = array();
-			$latlng['latitude'] = $latlng['longitude'] = '';
+			
 			foreach ($link as $part) {
 				if (is_numeric($part) && $part>0) {
-					$latlng['latitude'] = $part;
+					$latlng['latitude'] = floatval($part);
 				}
 				if (is_numeric($part) && $part<0) {
-					$latlng['longitude'] = $part;
+					$latlng['longitude'] = floatval($part);
 				}				
 				if (!empty($latlng['latitude']) && $latlng['longitude']) {
 					return $latlng;
@@ -79,7 +92,7 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 
 	public function getLeader() {
 		foreach($this->church_html->find('.field-name-field-clergy p') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
@@ -95,49 +108,49 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 
 	public function getName() {
 		foreach($this->church_html->find('#page-title') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getURL() {
 		foreach($this->church_html->find('.field-name-field-website a') as $item) {
-			return trim($item->href);
+			return html_entity_decode(trim($item->href));
 		}
 	}
 
 	public function getAddress() {
 		foreach($this->church_html->find('.vcard .street-address') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getState() {
 		foreach($this->church_html->find('.vcard .region') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getCity() {
 		foreach($this->church_html->find('.vcard .locality') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getZip() {
 		foreach($this->church_html->find('.vcard .postal-code') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getEmail() {
 		foreach($this->church_html->find('.field-name-field-email a') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
 	public function getPhone() {
 		foreach($this->church_html->find('.field-name-field-phone a') as $item) {
-			return trim($item->innertext);
+			return html_entity_decode(trim($item->innertext));
 		}
 	}
 
@@ -147,18 +160,34 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 
 	public function getFacebook() {
 		foreach($this->church_html->find('.field-name-field-facebook a') as $item) {
-			return trim($item->href);
+			return html_entity_decode(trim($item->href));
 		}
 	}
 
-	private function scrapeChurch($url) {
+	public function getRegion() {
 
+		foreach($this->church_html->find('.field-name-field-er-diocese a') as $item) {
+			$link = trim($item->href);
+			$name = trim($item->innertext);
+			break;
+		}
+		$link = explode("/",$link);
+		$slug = $link[2];
+		$region = \App\Models\Region::firstOrNew(array('slug' => $slug));
+		$region->slug = $slug;
+		$region->long_name = 'Diocese of '.$name;
+		$region->short_name = $name;
+		$region->url = '';
+		$region->denomination = $this->denominationID();
+		$region->save();
+		return $region->id;
+	}
+
+	private function scrapeChurch($url) {
 		$url = $this->url . '/' . $url;
 		$response = $this->get($url);
 		$this->church_html  = HtmlDomParser::str_get_html($response);
-
 		$this->saveChurch();
-
 	}
 
 }

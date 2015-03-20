@@ -14,10 +14,10 @@ class CreateChurchesTable extends Migration {
 			$table->string('externalid');
 			$table->integer('region')->unsigned();
 			$table->string('leader')->nullable();
-			$table->float('latitude', 5,5)->index();
-			$table->float('longitude', 5,5)->index();
+			$table->double('latitude', 10,5)->index()->nullable();;
+			$table->double('longitude', 10,5)->index()->nullable();;
 			$table->string('name', 256)->index();
-			$table->string('url', 255);
+			$table->string('url', 255)->nullable();
 			$table->string('address')->nullable();
 			$table->string('city')->nullable();
 			$table->string('state')->nullable();

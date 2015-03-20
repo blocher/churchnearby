@@ -5,6 +5,7 @@ use Sunra\PhpSimple\HtmlDomParser;
 abstract class Scraper {
 
 	protected $church_html = '';
+	protected $denomination_slug = '';
 
 	/**
 	* Send a POST requst using cURL
@@ -104,6 +105,13 @@ abstract class Scraper {
 		echo PHP_EOL;
 	}
 
+	public function denominationID() {
+
+		$id = \App\Models\Denomination::where('slug',$this->denomination_slug)
+			->pluck('id');
+		return $id;
+	}
+
 	abstract function scrape();
 	abstract function getExternalID();
 	abstract function getLeader();
@@ -119,11 +127,11 @@ abstract class Scraper {
 	abstract function getPhone();
 	abstract function getTwitter();
 	abstract function getFacebook();
+	abstract function getRegion();
 
 	public function saveChurch() {
-
 		$id = $this->getExternalID();
-		$church = \App\Models\Church::firstOrCreate(array('externalid' => $id));
+		$church = \App\Models\Church::firstOrNew(array('externalid' => $id));
 		$church->externalid = $id;
 		$church->leader = $this->getLeader();
 		$church->latitude = $this->getLatitude();
@@ -135,11 +143,10 @@ abstract class Scraper {
 		$church->zip = $this->getZip();
 		$church->email = $this->getEmail();
 		$church->phone = $this->getPhone();
-		$church->twttier = $this->getTwitter();
+		$church->twitter = $this->getTwitter();
 		$church->facebook = $this->getFacebook();
+		$church->region = $this->getRegion();
 		$church->save();
-		dd($church);
-
 	}
 
 }
