@@ -39,9 +39,9 @@ class Scraper extends Command {
 	{
 
 		$denomination = $this->argument('denomination');
-		$class = '\App\Scrapers\Denominations\\'.$denomination.'Scraper';
+		$class = '\App\Scrapers\ChurchScraper\Denominations\\'.$denomination.'Scraper';
 		
-		if (class_exists('\App\Scrapers\Denominations\\'.$denomination.'Scraper')) {
+		if (class_exists($class)) {
 			$this->info ('Let\'s scrape');
 		} else {
 			$this->error ('The denomination you entered is not available.');

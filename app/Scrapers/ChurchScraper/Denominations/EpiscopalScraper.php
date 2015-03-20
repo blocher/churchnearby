@@ -1,14 +1,15 @@
-<?php namespace App\Scrapers\Denominations;
+<?php namespace App\Scrapers\ChurchScraper\Denominations;
 
 use Sunra\PhpSimple\HtmlDomParser;
 
-class EpiscopalScraper extends \App\Scrapers\Scraper {
+class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	private $url = 'http://www.episcopalchurch.org';
 	private $directory = '/browse/parish';
 
 	protected $denomination_slug = 'episcopal';
 
+	/* the main scrape function to kick it off*/
 	public function scrape() {
 		$letters = range('A','Z');
 		foreach ($letters as $letter) {
@@ -16,6 +17,7 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 		}
 	}
 
+	/*step 1*/
 	private function scrapeLetter($letter) {
 
 		$url = $this->url . $this->directory . '/' . $letter;
@@ -37,6 +39,7 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 		}
 	}
 
+	/*step 2*/
 	private function scrapePage($letter,$page) {
 
 		$url = $this->url . $this->directory . '/' . $letter . '?page=' . $page;
@@ -48,6 +51,16 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 		}
 	}
 
+	/*step 3 -- actually saves the church */ 
+	private function scrapeChurch($url) {
+		$url = $this->url . '/' . $url;
+		$response = $this->get($url);
+		$this->church_html  = HtmlDomParser::str_get_html($response);
+		$this->saveChurch();
+	}
+
+
+	/* supports getLatitude() and getLongitude() -- not defined in abstract class*/
 	private function getLatitudeandLongitude() {
 		foreach($this->church_html->find('.location a') as $item) {
 
@@ -83,6 +96,13 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 			return $latlng;
 		}
 	}
+
+
+	/**
+	*
+	* These methods get properties and implement abstract classes
+	*
+	*/
 
 	public function getExternalID() {
 		foreach($this->church_html->find('article') as $item) {
@@ -183,11 +203,6 @@ class EpiscopalScraper extends \App\Scrapers\Scraper {
 		return $region->id;
 	}
 
-	private function scrapeChurch($url) {
-		$url = $this->url . '/' . $url;
-		$response = $this->get($url);
-		$this->church_html  = HtmlDomParser::str_get_html($response);
-		$this->saveChurch();
-	}
+
 
 }
