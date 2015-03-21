@@ -13,7 +13,15 @@ class HomeController extends Controller {
 	{
 	}
 
-	function nearbyChurches($latitude=38.804836,$longitude=-77.046921) {
+	public function apiNearbyChurches() {
+	
+	}
+
+	public function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30) {
+
+		$latitude = floatval($latitude);
+		$longitude = floatval($longitude);
+		$count = intval($count);
 
 		$circles = array(); 
 
@@ -28,7 +36,7 @@ class HomeController extends Controller {
 			                 * SIN(RADIANS(c.latitude)))) AS distance_in_miles
 			  FROM churches AS c
 			  JOIN (   /* these are the query parameters */
-			        SELECT  ' . $latitude .'  AS latpoint, ' . $longitude . ' AS longpoint,
+			        SELECT  ' . $latitude .'  AS latpoint,' . $longitude . ' AS longpoint,
 			                30000.0 AS radius,      69.0 AS distance_unit
 			    ) AS p
 			  WHERE c.latitude
@@ -38,11 +46,12 @@ class HomeController extends Controller {
 			     BETWEEN p.longpoint - (p.radius / (p.distance_unit * COS(RADIANS(p.latpoint))))
 			         AND p.longpoint + (p.radius / (p.distance_unit * COS(RADIANS(p.latpoint))))
 			  ORDER BY distance_in_miles ASC
-			  LIMIT 15
+			  LIMIT ' . $count . ';
 		';
 
+		//why won't bindings work?  Poreteciting with intval and floatval above instead
+		//$results = DB::select($sql,['latitude'=>$latitude,'longitude'=>$longitude,'count'=>$count]);
 		$results = DB::select($sql);
-		
 		return $results;
 
 	}
@@ -57,10 +66,32 @@ class HomeController extends Controller {
 	public function index()
 	{
 		$churches = $this->nearbyChurches();
+		echo '<div id="demo"></div>';
 		foreach ($churches as $church) {
 			echo '<h3>' . $church->name. '</h3>';
 			echo '<p>' . $church->distance_in_miles .' miles away</p>';
 		}
+		
+		echo '
+
+			<script>
+				var x = document.getElementById("demo");
+				function getLocation() {
+				    if (navigator.geolocation) {
+				        navigator.geolocation.getCurrentPosition(showPosition);
+				    } else {
+				        x.innerHTML = "Geolocation is not supported by this browser.";
+				    }
+				}
+				function showPosition(position) {
+				    x.innerHTML = "Latitude: " + position.coords.latitude + 
+				    "<br>Longitude: " + position.coords.longitude; 
+				}
+			getLocation();
+			</script>
+			
+
+		';
 		
 	}
 

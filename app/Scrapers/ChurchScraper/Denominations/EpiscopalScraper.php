@@ -11,7 +11,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	/* the main scrape function to kick it off*/
 	public function scrape() {
-		$letters = range('A','Z');
+		$letters = range('S','Z');
 		foreach ($letters as $letter) {
 			$this->scrapeLetter($letter);
 		}
@@ -78,8 +78,14 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 			}
 
 			$link = explode('=',$link);
+			if (count($link)<=1) {
+				return $latlng;
+			}
 			$link = $link[1];
 			$link = explode('+',$link);
+			if (count($link)<=1) {
+				return $latlng;
+			}
 		
 			
 			foreach ($link as $part) {
@@ -186,13 +192,21 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	public function getRegion() {
 
+		$link = '';
 		foreach($this->church_html->find('.field-name-field-er-diocese a') as $item) {
 			$link = trim($item->href);
 			$name = trim($item->innertext);
 			break;
 		}
-		$link = explode("/",$link);
-		$slug = $link[2];
+
+		if (empty($link)) {
+			$slug = 'unknown';
+			$name = 'Unknown';
+		} else {
+			$link = explode("/",$link);
+			$slug = $link[2];
+		}
+
 		$region = \App\Models\Region::firstOrNew(array('slug' => $slug));
 		$region->slug = $slug;
 		$region->long_name = 'Diocese of '.$name;
