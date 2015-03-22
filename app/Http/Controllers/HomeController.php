@@ -14,6 +14,22 @@ class HomeController extends Controller {
 	{
 	}
 
+	public function getDiocese($churches) {
+
+		$region = \App\Models\Region::find($churches[0]->region);
+		$bestguess = $region->long_name;
+
+		return $bestguess;
+		$possibilities = array();
+		foreach ($churches as $church) {
+			$possibilities = $church->region->name;
+		}
+		$possibilities = array_unique($possibilities);
+
+
+
+	}
+
 	public function apiNearbyChurches() {
 		
 		$latitude = Input::get('latitude',38.813832399999995);
@@ -24,6 +40,7 @@ class HomeController extends Controller {
 		$result['churches'] = $this->nearbyChurches($latitude, $longitude, $count);
 		$result['latitude'] = $latitude;
 		$result['longitude'] = $longitude;
+		$result['diocese'] = $this->getDiocese( $result['churches'] );
 
 		return $result;
 
@@ -36,6 +53,7 @@ class HomeController extends Controller {
 			->with('churches',$result['churches'])
 			->with('longitude',$result['longitude'])
 			->with('latitude',$result['latitude'])
+			->with('diocese',$result['diocese'])
 			;
 
 	}
