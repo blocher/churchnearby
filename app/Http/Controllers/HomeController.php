@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use DB;
+use Input;
 
 class HomeController extends Controller {
 
@@ -14,7 +15,22 @@ class HomeController extends Controller {
 	}
 
 	public function apiNearbyChurches() {
-	
+		
+		$latitude = Input::get('latitude',38.813832399999995);
+		$longitude = Input::get('longitude',-77.1096706);
+		$count = Input::get('count',30);
+
+		return $this->nearbyChurches($latitude, $longitude, $count);
+
+	}
+
+	public function apiNearbyChurchesView() {
+		
+		$churches = $this->apiNearbyChurches();
+		//echo "<pre>"; dd($churches);
+		return view('slices/churchlist')
+			->with('churches',$churches);
+
 	}
 
 	public function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30) {
@@ -65,6 +81,7 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
+		return view('home');
 		$churches = $this->nearbyChurches();
 		echo '<div id="demo"></div>';
 		foreach ($churches as $church) {

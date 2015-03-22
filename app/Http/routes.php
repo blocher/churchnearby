@@ -12,6 +12,8 @@
 */
 
 Route::get('/', 'HomeController@index');
+Route::get('/api/nearbyChurches', 'HomeController@apiNearbyChurches');
+Route::get('/api/nearbyChurchesView', 'HomeController@apiNearbyChurchesView');
 
 Route::resource('church', 'ChurchController');
 Route::resource('denomination', 'DenominationController');
