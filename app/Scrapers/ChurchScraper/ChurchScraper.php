@@ -43,6 +43,7 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->longitude = $this->getLongitude();
 		$church->name = $this->getName();
 		$church->url = $this->getURL();
+		$church->address = $this->getAddress();
 		$church->state = $this->getState();
 		$church->city = $this->getCity();
 		$church->zip = $this->getZip();

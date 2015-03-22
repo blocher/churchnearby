@@ -11,7 +11,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	/* the main scrape function to kick it off*/
 	public function scrape() {
-		$letters = range('S','Z');
+		$letters = range('A','Z');
 		foreach ($letters as $letter) {
 			$this->scrapeLetter($letter);
 		}
