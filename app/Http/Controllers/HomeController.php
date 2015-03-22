@@ -20,16 +20,23 @@ class HomeController extends Controller {
 		$longitude = Input::get('longitude',-77.1096706);
 		$count = Input::get('count',30);
 
-		return $this->nearbyChurches($latitude, $longitude, $count);
+		$result = array();
+		$result['churches'] = $this->nearbyChurches($latitude, $longitude, $count);
+		$result['latitude'] = $latitude;
+		$result['longitude'] = $longitude;
+
+		return $result;
 
 	}
 
 	public function apiNearbyChurchesView() {
 		
-		$churches = $this->apiNearbyChurches();
-		//echo "<pre>"; dd($churches);
+		$result = $this->apiNearbyChurches();
 		return view('slices/churchlist')
-			->with('churches',$churches);
+			->with('churches',$result['churches'])
+			->with('longitude',$result['longitude'])
+			->with('latitude',$result['latitude'])
+			;
 
 	}
 
