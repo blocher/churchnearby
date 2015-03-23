@@ -10,11 +10,27 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	protected $denomination_slug = 'episcopal';
 
 	/* the main scrape function to kick it off*/
-	public function scrape() {
-		$letters = range('A','Z');
+	public function scrape($startletter='A') {
+		$letters = range($startletter,'Z');
 		foreach ($letters as $letter) {
 			$this->scrapeLetter($letter);
 		}
+	}
+
+	public function resume() {
+		
+		$last_updated_church = \App\Models\Church::whereHas('region', function($q)
+		{
+			    $q->whereHas('denomination',function($q)
+				{
+					$q->where('slug',$this->denomination_slug);
+				});
+		})
+		 ->orderBy('updated_at','desc')
+		 ->first();
+		
+		 $last_updated_letter = strtoupper(substr($last_updated_church->name,0,1));
+		 $this->scrape($last_updated_letter);
 	}
 
 	/*step 1*/

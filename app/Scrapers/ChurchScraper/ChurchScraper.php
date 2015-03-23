@@ -2,6 +2,7 @@
 
 use Sunra\PhpSimple\HtmlDomParser;
 
+
 abstract class ChurchScraper extends \App\Scrapers\Scraper {
 
 	protected $church_html = '';
@@ -15,6 +16,12 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	}
 
 	abstract function scrape();
+
+	/* if resume functionality is available, overwrite in child class */
+	public function resume() {
+		echo  'No resume functionality is supported for this scraper. Starting from beginning.' . "\n";
+		$this->scrape();
+	}
 
 	/*  Get the fields needed to save the church */
 	abstract function getExternalID();

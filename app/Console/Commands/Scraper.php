@@ -50,7 +50,13 @@ class Scraper extends Command {
 
 		$scraper = new $class;
 
-		$scraper->scrape();
+		if ($this->option('resume')) {
+			$this->info('The scraper will attemp to resume from where it left off.');
+			$scraper->resume();
+		} else {
+			$scraper->scrape();
+		}
+		
 	}
 
 	/**
@@ -73,6 +79,7 @@ class Scraper extends Command {
 	protected function getOptions()
 	{
 		return array(
+			array('resume', 'r' , InputOption::VALUE_NONE, 'Resume from where the scraper last left off')
 		);
 	}
 
