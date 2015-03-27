@@ -1,0 +1,16 @@
+Move this into fucntion html_entity_decode(trim(
+Investigate callbacks
+find -- index 0
+denominationsId => fetchDenominationId
+getRegion ->add comments
+saveRegion -> up to ChurchScraper.php
+
+add api controller
+consider building view with javascript
+
+model -- move sql here
+
+
+hasManyThrough relationship
+
+adjust everything to use models instead of array - for big sql query

@@ -4,6 +4,7 @@ use Sunra\PhpSimple\HtmlDomParser;
 
 class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
+
 	private $url = 'http://www.episcopalchurch.org';
 	private $directory = '/browse/parish';
 
@@ -80,7 +81,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private function getLatitudeandLongitude() {
 		foreach($this->church_html->find('.location a') as $item) {
 
-			$latlng = array();
+			$latlng = [];
 			$latlng['latitude'] = $latlng['longitude'] = '';
 
 			if (!isset($item->href)) {
@@ -102,8 +103,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 			if (count($link)<=1) {
 				return $latlng;
 			}
-		
-			
+			//TODO: add comment
 			foreach ($link as $part) {
 				if (is_numeric($part) && $part>0) {
 					$latlng['latitude'] = floatval($part);
@@ -232,7 +232,5 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$region->save();
 		return $region->id;
 	}
-
-
 
 }
