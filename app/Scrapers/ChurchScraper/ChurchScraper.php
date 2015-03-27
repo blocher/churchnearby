@@ -24,41 +24,41 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	}
 
 	/*  Get the fields needed to save the church */
-	abstract function getExternalID();
-	abstract function getLeader();
-	abstract function getLatitude();
-	abstract function getLongitude();
-	abstract function getName();
-	abstract function getURL();
-	abstract function getAddress();
-	abstract function getState();
-	abstract function getCity();
-	abstract function getZip();
-	abstract function getEmail();
-	abstract function getPhone();
-	abstract function getTwitter();
-	abstract function getFacebook();
-	abstract function getRegion();
+	abstract function extractExternalID();
+	abstract function extractLeader();
+	abstract function extractLatitude();
+	abstract function extractLongitude();
+	abstract function extractName();
+	abstract function extractURL();
+	abstract function extractAddress();
+	abstract function extractState();
+	abstract function extractCity();
+	abstract function extractZip();
+	abstract function extractEmail();
+	abstract function extractPhone();
+	abstract function extractTwitter();
+	abstract function extractFacebook();
+	abstract function extractRegion();
 
 	/* save the church */
 	public function saveChurch() {
-		$id = $this->getExternalID();
+		$id = $this->extractExternalID();
 		$church = \App\Models\Church::firstOrNew(array('externalid' => $id));
 		$church->externalid = $id;
-		$church->leader = $this->getLeader();
-		$church->latitude = $this->getLatitude();
-		$church->longitude = $this->getLongitude();
-		$church->name = $this->getName();
-		$church->url = $this->getURL();
-		$church->address = $this->getAddress();
-		$church->state = $this->getState();
-		$church->city = $this->getCity();
-		$church->zip = $this->getZip();
-		$church->email = $this->getEmail();
-		$church->phone = $this->getPhone();
-		$church->twitter = $this->getTwitter();
-		$church->facebook = $this->getFacebook();
-		$church->region = $this->getRegion();
+		$church->leader = $this->extractLeader();
+		$church->latitude = $this->extractLatitude();
+		$church->longitude = $this->extractLongitude();
+		$church->name = $this->extractName();
+		$church->url = $this->extractURL();
+		$church->address = $this->extractAddress();
+		$church->state = $this->extractState();
+		$church->city = $this->extractCity();
+		$church->zip = $this->extractZip();
+		$church->email = $this->extractEmail();
+		$church->phone = $this->extractPhone();
+		$church->twitter = $this->extractTwitter();
+		$church->facebook = $this->extractFacebook();
+		$church->region = $this->extractRegion();
 		$church->save();
 	}
 

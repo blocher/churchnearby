@@ -22,10 +22,10 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		
 		$last_updated_church = \App\Models\Church::whereHas('region', function($q)
 		{
-			    $q->whereHas('denomination',function($q)
-				{
-					$q->where('slug',$this->denomination_slug);
-				});
+		    $q->whereHas('denomination',function($q)
+			{
+				$q->where('slug',$this->denomination_slug);
+			});
 		})
 		 ->orderBy('updated_at','desc')
 		 ->first();
@@ -69,16 +69,16 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	/*step 3 -- actually saves the church */ 
-	private function scrapeChurch($url) {
-		$url = $this->url . '/' . $url;
+	private function scrapeChurch($church_url) {
+		$url = $this->url . $church_url;
 		$response = $this->get($url);
 		$this->church_html  = HtmlDomParser::str_get_html($response);
 		$this->saveChurch();
 	}
 
 
-	/* supports getLatitude() and getLongitude() -- not defined in abstract class*/
-	private function getLatitudeandLongitude() {
+	/* supports extractLatitude() and extractLongitude() -- not defined in abstract class*/
+	private function extractLatitudeandLongitude() {
 		foreach($this->church_html->find('.location a') as $item) {
 
 			$latlng = [];
@@ -122,91 +122,98 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	/**
 	*
-	* These methods get properties and implement abstract classes
+	* Helpers to clean results
 	*
 	*/
 
-	public function getExternalID() {
-		foreach($this->church_html->find('article') as $item) {
-			return str_replace('node-','',$item->id);
-		}
+	private static function clean($string) {
+		return html_entity_decode(trim($string));
 	}
 
-	public function getLeader() {
-		foreach($this->church_html->find('.field-name-field-clergy p') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	private function parsePhone($phone) {
+		$phone = str_replace('<div  class="field-label field-label">Phone: </div>','',$phone);
+		$phone = preg_replace("/[^0-9]/", '', $phone);
+		$phone = '(' . substr($phone,0,3) . ') ' . substr($phone,3,3) . '-' . substr($phone,6,4);
+		return $phone;
 	}
 
-	public function getLatitude() {
-		$latln = $this->getLatitudeandLongitude();
+
+	/**
+	*
+	* These methods extract properties; implement abstract classes
+	*
+	*/
+
+	public function extractExternalID() {
+		$item = $this->church_html->find('article',0);
+		return $item ? $this->clean(str_replace('node-','',$item->id)) : '';
+	}
+
+	public function extractLeader() {
+		$item = $this->church_html->find('.field-name-field-clergy p',0);
+		return $item ? $this->clean($item->innertext) : '';
+	}
+
+	public function extractLatitude() {
+		$latln = $this->extractLatitudeandLongitude();
 		return $latln['latitude'];
 	}
 
-	public function getLongitude() {
-		$latln = $this->getLatitudeandLongitude();
+	public function extractLongitude() {
+		$latln = $this->extractLatitudeandLongitude();
 		return $latln['longitude'];
 	}
 
-	public function getName() {
-		foreach($this->church_html->find('#page-title') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractName() {
+		$item = $this->church_html->find('#page-title',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getURL() {
-		foreach($this->church_html->find('.field-name-field-website a') as $item) {
-			return html_entity_decode(trim($item->href));
-		}
+	public function extractURL() {
+		$item = $this->church_html->find('.field-name-field-website a',0);
+		return $item ? $this->clean($item->href) : '';
 	}
 
-	public function getAddress() {
-		foreach($this->church_html->find('.vcard .street-address') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractAddress() {
+		$item = $this->church_html->find('.vcard .street-address',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getState() {
-		foreach($this->church_html->find('.vcard .region') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractState() {
+		$item = $this->church_html->find('.vcard .region',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getCity() {
-		foreach($this->church_html->find('.vcard .locality') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractCity() {
+		$item = $this->church_html->find('.vcard .locality',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getZip() {
-		foreach($this->church_html->find('.vcard .postal-code') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractZip() {
+		$item = $this->church_html->find('.vcard .postal-code',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getEmail() {
-		foreach($this->church_html->find('.field-name-field-email a') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractEmail() {
+		$item = $this->church_html->find('.field-name-field-email a',0);
+		return $item ? $this->clean($item->innertext) : '';
 	}
 
-	public function getPhone() {
-		foreach($this->church_html->find('.field-name-field-phone a') as $item) {
-			return html_entity_decode(trim($item->innertext));
-		}
+	public function extractPhone() {
+		$item = $this->church_html->find('.field-name-field-phone',0);
+		return $item ? $this->clean($this->parsePhone($item->innertext)) : '';
 	}
 
-	public function getTwitter() {
+	public function extractTwitter() {
 		return '';
 	}
 
-	public function getFacebook() {
-		foreach($this->church_html->find('.field-name-field-facebook a') as $item) {
-			return html_entity_decode(trim($item->href));
-		}
+	public function extractFacebook() {
+		$item = $this->church_html->find('.field-name-field-facebook a',0);
+		return $item ? $this->clean($item->href)  : '';
 	}
 
-	public function getRegion() {
+	public function extractRegion() {
 
 		$link = '';
 		foreach($this->church_html->find('.field-name-field-er-diocese a') as $item) {
