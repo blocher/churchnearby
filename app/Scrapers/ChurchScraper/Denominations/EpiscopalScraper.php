@@ -137,7 +137,6 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		return $phone;
 	}
 
-
 	/**
 	*
 	* These methods extract properties; implement abstract classes
