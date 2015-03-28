@@ -8,11 +8,18 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	protected $church_html = '';
 	protected $denomination_slug = '';
 
-	public function denominationID() {
+	protected function denominationID() {
 
 		$id = \App\Models\Denomination::where('slug',$this->denomination_slug)
 			->pluck('id');
 		return $id;
+	}
+
+	protected function parsePhone($phone) {
+		$phone = str_replace('<div  class="field-label field-label">Phone: </div>','',$phone);
+		$phone = preg_replace("/[^0-9]/", '', $phone);
+		$phone = '(' . substr($phone,0,3) . ') ' . substr($phone,3,3) . '-' . substr($phone,6,4);
+		return $phone;
 	}
 
 	abstract function scrape();
