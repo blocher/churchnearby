@@ -130,13 +130,6 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		return html_entity_decode(trim($string));
 	}
 
-	private function parsePhone($phone) {
-		$phone = str_replace('<div  class="field-label field-label">Phone: </div>','',$phone);
-		$phone = preg_replace("/[^0-9]/", '', $phone);
-		$phone = '(' . substr($phone,0,3) . ') ' . substr($phone,3,3) . '-' . substr($phone,6,4);
-		return $phone;
-	}
-
 	/**
 	*
 	* These methods extract properties; implement abstract classes
