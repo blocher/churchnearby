@@ -83,6 +83,9 @@ class HomeController extends Controller {
 			->where('longitude','>',DB::raw($longitude . " - (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
 			->where('longitude','<',DB::raw($longitude . " + (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
 			
+		//	->with('region')
+		//	->with('region.denomination')
+
 			->orderBy('distance_in_miles','ASC')
 			->take($count)
 			->get();

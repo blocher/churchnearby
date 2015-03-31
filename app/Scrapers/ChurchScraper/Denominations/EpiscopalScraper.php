@@ -227,7 +227,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$region->long_name = 'Diocese of '.$name;
 		$region->short_name = $name;
 		$region->url = '';
-		$region->denomination = $this->denominationID();
+		$region->denomination_id = $this->denominationID();
 		$region->save();
 		return $region->id;
 	}

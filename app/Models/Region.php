@@ -17,12 +17,12 @@ class Region extends Model {
 
 	public function denomination()
 	{
-		return $this->belongsTo('App\Models\Denomination', 'denomination');
+		return $this->belongsTo('App\Models\Denomination', 'denomination_id','id');
 	}
 
 	public function churches()
 	{
-		return $this->hasMany('App\Models\Churches', 'region');
+		return $this->hasMany('App\Models\Churches', 'region_id','id');
 	}
 
 }

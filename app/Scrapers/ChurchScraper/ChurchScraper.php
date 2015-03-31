@@ -50,8 +50,8 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	/* save the church */
 	public function saveChurch() {
 		$id = $this->extractExternalID();
-		$church = \App\Models\Church::firstOrNew(array('externalid' => $id));
-		$church->externalid = $id;
+		$church = \App\Models\Church::firstOrNew(array('external_id' => $id));
+		$church->external_id = $id;
 		$church->leader = $this->extractLeader();
 		$church->latitude = $this->extractLatitude();
 		$church->longitude = $this->extractLongitude();
@@ -65,7 +65,7 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->phone = $this->extractPhone();
 		$church->twitter = $this->extractTwitter();
 		$church->facebook = $this->extractFacebook();
-		$church->region = $this->extractRegion();
+		$church->region_id = $this->extractRegion();
 		$church->save();
 	}
 

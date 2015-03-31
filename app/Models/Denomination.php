@@ -17,7 +17,7 @@ class Denomination extends Model {
 
 	public function regions()
 	{
-		return $this->hasMany('App\Models\Region', 'denomination');
+		return $this->hasMany('App\Models\Region', 'denomination_id','id');
 	}
 
 }

@@ -11,8 +11,8 @@ class CreateChurchesTable extends Migration {
 			$table->increments('id');
 			$table->timestamps();
 			$table->softDeletes();
-			$table->string('externalid');
-			$table->integer('region')->unsigned();
+			$table->string('external_id');
+			$table->integer('region_id')->unsigned();
 			$table->string('leader')->nullable();
 			$table->double('latitude', 10,5)->index()->nullable();;
 			$table->double('longitude', 10,5)->index()->nullable();;

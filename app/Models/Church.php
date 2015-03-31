@@ -17,19 +17,7 @@ class Church extends Model {
 
 	public function region()
 	{
-		return $this->belongsTo('App\Models\Region','region');
-	}
-
-	public function denomination()
-	{
-		$region = $this->region;
-		$denomination = Region::find($region)->denomination;
-		return Denomination::find($denomination);
-	}
-
-	public function denominationSlug()
-	{
-		return $this->denomination()->slug;
+		return $this->belongsTo('\App\Models\Region','region_id','id');
 	}
 
 }

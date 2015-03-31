@@ -9,12 +9,12 @@ class CreateForeignKeys extends Migration {
 	public function up()
 	{
 		Schema::table('churches', function(Blueprint $table) {
-			$table->foreign('region')->references('id')->on('regions')
+			$table->foreign('region_id')->references('id')->on('regions')
 						->onDelete('cascade')
 						->onUpdate('cascade');
 		});
 		Schema::table('regions', function(Blueprint $table) {
-			$table->foreign('denomination')->references('id')->on('denominations')
+			$table->foreign('denomination_id')->references('id')->on('denominations')
 						->onDelete('cascade')
 						->onUpdate('cascade');
 		});

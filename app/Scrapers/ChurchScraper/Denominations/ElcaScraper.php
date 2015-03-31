@@ -11,7 +11,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	protected $denomination_slug = 'elca';
 
 	private $current_synod;
-	private $church_json;
+	private $current_church;
 
 	/* the main scrape function to kick it off*/
 	public function scrape() {
@@ -48,7 +48,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		foreach ($synods as $synod) {
 
 			$this->setSynod($synod);
-			continue;
+
 
 			$url = 'http://search.elca.org/_layouts/15/ELCA.Search/Handlers/MapHandler.ashx';
 			$fields = [
@@ -60,7 +60,14 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 			$response = $this->post($url,$fields);
 			$response = json_decode($response);
 
+			echo $synod . "\n";
 
+			foreach ($response as $church) {
+				$this->current_church = $church;
+				$this->saveChurch();
+			}
+
+			$this->saveChurch();
 
 		}
 
@@ -71,6 +78,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		
 		$short_name = substr($synod,5);
 		$short_name = str_replace(' Synod, ELCA','',$short_name);
+		$short_name = str_replace(', ELCA','',$short_name);
 		$long_name = $short_name . ' ' . 'Synod';
 		$slug = preg_replace("/[^A-Za-z0-9]/", '_', strtolower($short_name));
 		$id = substr($synod,0,2);
@@ -80,7 +88,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$region->long_name = $long_name;
 		$region->short_name = $short_name;
 		$region->url = '';
-		$region->denomination = $this->denominationID();
+		$region->denomination_id = $this->denominationID();
 		$region->save();
 		$this->current_synod = $region->id;
 		return $region->id;
@@ -109,52 +117,65 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	*/
 
 	public function extractExternalID() {
-		
+		return $this->current_church->LocationID;
 	}
 
 	public function extractLeader() {
+		return '';
 	}
 
 	public function extractLatitude() {
+		return $this->current_church->Latitude;
 
 	}
 
 	public function extractLongitude() {
+		return $this->current_church->Longitude;
 	}
 
 	public function extractName() {
+		return $this->current_church->LocationName;
 
 	}
 
 	public function extractURL() {
+		return "http://search.elca.org/Pages/Location.aspx?LocationID=" . $this->current_church->LocationID . "&LocationType=" . $this->current_church->LocationType;
 	}
 
 	public function extractAddress() {
+		return $this->current_church->LocationStreetAddress;
 	}
 
 	public function extractState() {
+		return $this->current_church->LocationState;
 	}
 
 	public function extractCity() {
+		return $this->current_church->LocationCity;
 	}
 
 	public function extractZip() {
-
+		return $this->current_church->LocationZIP;
 	}
 
 	public function extractEmail() {
+		return '';
 	}
 
 	public function extractPhone() {
+		return '';
 	}
 
 	public function extractTwitter() {
+		return '';
 	}
 
 	public function extractFacebook() {
+		return '';
 	}
 
 	public function extractRegion() {
+		return $this->current_synod;
 	}
 
 }
