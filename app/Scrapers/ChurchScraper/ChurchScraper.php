@@ -5,8 +5,13 @@ use Sunra\PhpSimple\HtmlDomParser;
 
 abstract class ChurchScraper extends \App\Scrapers\Scraper {
 
+	function __construct() {
+       $this->denomination =  $this->saveDenomination();
+   	}
+
 	protected $church_html = '';
 	protected $denomination_slug = '';
+	protected $denomination;
 
 	protected function denominationID() {
 
@@ -67,6 +72,28 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->facebook = $this->extractFacebook();
 		$church->region_id = $this->extractRegion();
 		$church->save();
+	}
+
+	abstract protected function getDenominationSlug();
+	abstract protected function getDenominationName();
+	abstract protected function getDenominationUrl();
+	abstract protected function getDenominationRegionName();
+	abstract protected function getDenominationRegionNamePlural();
+	abstract protected function getDenominationTagName();
+	abstract protected function getDenominationColor();
+
+	public function saveDenomination() {
+		$slug = $this->getDenominationSlug();
+		$denomination = \App\Models\Denomination::firstOrNew(array('slug' => $slug));
+		$denomination->slug  = $this->getDenominationSlug();
+		$denomination->name = $this->getDenominationName();
+		$denomination->url = $this->getDenominationUrl();
+		$denomination->region_name = $this->getDenominationRegionName();
+		$denomination->region_name_plural = $this->getDenominationRegionNamePlural();
+		$denomination->tag_name = $this->getDenominationTagName();
+		$denomination->color = $region_name_plural = $this->getDenominationColor();
+		$denomination->save();
+		return $denomination->id;
 	}
 
 }

@@ -16,7 +16,6 @@ class CreateDenominationsTable extends Migration {
 			$table->string('url', 255);
 			$table->string('region_name')->nullable()->index();
 			$table->string('region_name_plural')->nullable()->index();
-			$table->string('external_id');
 			$table->string('color');
 			$table->string('tag_name');
 		});

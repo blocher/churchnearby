@@ -16,6 +16,7 @@ class CreateRegionsTable extends Migration {
 			$table->string('url')->nullable();
 			$table->integer('denomination_id')->unsigned()->index();
 			$table->string('slug', 256);
+			$table->string('external_id');
 		});
 	}
 

@@ -9,6 +9,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private $directory = '/browse/parish';
 
 	protected $denomination_slug = 'episcopal';
+	protected $denomination;
 
 	/* the main scrape function to kick it off*/
 	public function scrape($startletter='A') {
@@ -227,9 +228,43 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$region->long_name = 'Diocese of '.$name;
 		$region->short_name = $name;
 		$region->url = '';
-		$region->denomination_id = $this->denominationID();
+		$region->denomination_id = $this->denomination;
 		$region->save();
 		return $region->id;
+	}
+
+
+
+	protected function getDenominationSlug() {
+		return 'episcopal';
+	}
+	
+	protected function getDenominationName() {
+		return 'The Episcopal Church';
+	}
+	
+	protected function getDenominationUrl() {
+		return 'http://www.episcopalchurch.org';
+
+	}
+	
+	protected function getDenominationRegionName() {
+		return 'Diocese';
+
+	}
+	
+	protected function getDenominationRegionNamePlural() {
+		return 'Dioceses';
+
+	}
+	
+	protected function getDenominationTagName() {
+		return 'Episcopal';
+	}
+
+	protected function getDenominationColor() {
+		return 'Blue';
+
 	}
 
 }

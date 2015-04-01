@@ -1,5 +1,5 @@
 <li class="list-group-item">
-	<h4 class="list-group-item-heading" id="list-group-item-heading"><a target="_blank" href="{{ $church->url }}">{{ $church->name }}</a> <span class="badge">{{ $church->region->denomination->name }}</span></a></h4>
+	<h4 class="list-group-item-heading" id="list-group-item-heading"><a target="_blank" href="{{ $church->url }}">{{ $church->name }}</a> <span class="badge">{{ $church->region->denomination->tag_name }}</span></a></h4>
 	<p class="list-group-item-text">{{ $church->address}}</p>
 	<p class="list-group-item-text">{{ $church->city }}, {{ $church->state }} {{ $church->zip}}<br></p>
 	<p class="list-group-item-text">Leader: {{ $church->leader }}</p>

@@ -9,6 +9,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private $directory = '/tools/FindACongregation';
 
 	protected $denomination_slug = 'elca';
+	protected $denomination;
 
 	private $current_synod;
 	private $current_church;
@@ -74,8 +75,6 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	private function setSynod($synod) {
-		
-		
 		$short_name = substr($synod,5);
 		$short_name = str_replace(' Synod, ELCA','',$short_name);
 		$short_name = str_replace(', ELCA','',$short_name);
@@ -88,7 +87,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$region->long_name = $long_name;
 		$region->short_name = $short_name;
 		$region->url = '';
-		$region->denomination_id = $this->denominationID();
+		$region->denomination_id = $this->denomination;
 		$region->save();
 		$this->current_synod = $region->id;
 		return $region->id;
@@ -176,6 +175,39 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	public function extractRegion() {
 		return $this->current_synod;
+	}
+
+
+	//Denomination stuff
+	protected function getDenominationSlug() {
+		return 'elca';
+	}
+	
+	protected function getDenominationName() {
+		return 'Evangelical Lutheran Church in America';
+	}
+	
+	protected function getDenominationUrl() {
+		return 'http://www.elca.org';
+
+	}
+	
+	protected function getDenominationRegionName() {
+		return 'Synods';
+
+	}
+	
+	protected function getDenominationRegionNamePlural() {
+		return 'Synods';
+	}
+	
+	protected function getDenominationTagName() {
+		return 'Lutheran (ELCA)';
+	}
+
+	protected function getDenominationColor() {
+		return 'Green';
+
 	}
 
 }
