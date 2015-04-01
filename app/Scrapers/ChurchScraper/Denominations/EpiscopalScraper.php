@@ -9,7 +9,7 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private $directory = '/browse/parish';
 
 	protected $denomination_slug = 'episcopal';
-	protected $denomination;
+	protected $denomination_id;
 
 	/* the main scrape function to kick it off*/
 	public function scrape($startletter='A') {
@@ -223,12 +223,12 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 			$slug = $link[2];
 		}
 
-		$region = \App\Models\Region::firstOrNew(array('slug' => $slug));
+		$region = \App\Models\Region::firstOrNew(array('slug' => $slug, 'denomination_id' => $this->denomination_id));
 		$region->slug = $slug;
 		$region->long_name = 'Diocese of '.$name;
 		$region->short_name = $name;
 		$region->url = '';
-		$region->denomination_id = $this->denomination;
+		$region->denomination_id = $this->denomination_id;
 		$region->save();
 		return $region->id;
 	}

@@ -9,7 +9,7 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private $directory = '/tools/FindACongregation';
 
 	protected $denomination_slug = 'elca';
-	protected $denomination;
+	protected $denomination_id;
 
 	private $current_synod;
 	private $current_church;
@@ -82,12 +82,12 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$slug = preg_replace("/[^A-Za-z0-9]/", '_', strtolower($short_name));
 		$id = substr($synod,0,2);
 
-		$region = \App\Models\Region::firstOrNew(array('slug' => $slug));
+		$region = \App\Models\Region::firstOrNew(array('slug' => $slug, 'denomination_id' => $this->denomination_id));
 		$region->slug = $slug;
 		$region->long_name = $long_name;
 		$region->short_name = $short_name;
 		$region->url = '';
-		$region->denomination_id = $this->denomination;
+		$region->denomination_id = $this->denomination_id;
 		$region->save();
 		$this->current_synod = $region->id;
 		return $region->id;

@@ -5,13 +5,13 @@ use Sunra\PhpSimple\HtmlDomParser;
 
 abstract class ChurchScraper extends \App\Scrapers\Scraper {
 
-	function __construct() {
-       $this->denomination =  $this->saveDenomination();
-   	}
-
 	protected $church_html = '';
 	protected $denomination_slug = '';
-	protected $denomination;
+	protected $denomination_id;
+
+	function __construct() {
+       $this->denomination_id =  $this->saveDenomination();
+   	}
 
 	protected function denominationID() {
 
