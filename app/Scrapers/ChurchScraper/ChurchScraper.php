@@ -13,13 +13,6 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
        $this->denomination_id =  $this->saveDenomination();
    	}
 
-	protected function denominationID() {
-
-		$id = \App\Models\Denomination::where('slug',$this->denomination_slug)
-			->pluck('id');
-		return $id;
-	}
-
 	protected function parsePhone($phone) {
 		$phone = str_replace('<div  class="field-label field-label">Phone: </div>','',$phone);
 		$phone = preg_replace("/[^0-9]/", '', $phone);
