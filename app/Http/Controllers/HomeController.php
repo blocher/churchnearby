@@ -36,13 +36,14 @@ class HomeController extends Controller {
 		
 		$latitude = Input::get('latitude',38.813832399999995);
 		$longitude = Input::get('longitude',-77.1096706);
+		$denomination = Input::get('denomination','');
 		$count = Input::get('count',30);
 
 		$result = array();
-		$result['churches'] = $this->nearbyChurches($latitude, $longitude, $count);
+		$result['churches'] = $this->nearbyChurches($latitude, $longitude, $count, $denomination);
 		$result['latitude'] = $latitude;
 		$result['longitude'] = $longitude;
-		$result['diocese'] = $this->getDiocese( $result['churches'] );
+		//$result['diocese'] = $this->getDiocese( $result['churches'] );
 
 		return $result;
 
@@ -55,12 +56,12 @@ class HomeController extends Controller {
 			->with('churches',$result['churches'])
 			->with('longitude',$result['longitude'])
 			->with('latitude',$result['latitude'])
-			->with('diocese',$result['diocese'])
+			//->with('diocese',$result['diocese'])
 			;
 
 	}
 
-	public function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30) {
+	public function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denomination = '') {
 
 		$latitude = floatval($latitude);
 		$longitude = floatval($longitude);
@@ -85,12 +86,24 @@ class HomeController extends Controller {
 			->where('longitude','>',DB::raw($longitude . " - (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
 			->where('longitude','<',DB::raw($longitude . " + (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
 			
+			;
+
+			if (!empty($denomination)) {
+				$churches = 
+					$churches->whereHas('region', function($q) use ($denomination)
+					{
+					    $q->where('denomination_id', $denomination);
+					});
+			}
+
+			$churches = $churches
 			->with('region')
 			->with('region.denomination')
 
 			->orderBy('distance_in_miles','ASC')
 			->take($count)
 			->get();
+		;
 
 		return $churches;
 
@@ -105,7 +118,9 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home');
+		$denominations = \App\Models\Denomination::orderBy('name','ASC')->get();
+		return view('home')
+			->with('denominations',$denominations);
 	}
 
 }

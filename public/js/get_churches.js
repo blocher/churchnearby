@@ -1,29 +1,35 @@
 $(document).ready(function() {
 
 	var x = document.getElementById("demo");
+	var latitude;
+	var longitude;
 
-	function getLocation() {
+	function initiate() {
 	    if (navigator.geolocation) {
-	        navigator.geolocation.getCurrentPosition(listChurches,geoLocationError);
+	        navigator.geolocation.getCurrentPosition(setLatLng,geoLocationError);
 	    } else {
-	        x.innerHTML = "Geolocation is not supported by this browser.";
+	        $('#content').html("Geolocation is not supported by this browser.");
 	    }
 	}
 
-	function showPosition(position) {
-	    x.innerHTML = "Latitude: " + position.coords.latitude + 
-	    "<br>Longitude: " + position.coords.longitude; 
+	function setLatLng(position) {
+		latitude =  position.coords.latitude;
+		longitude =  position.coords.longitude;
+		listChurches();
 	}
 
-	function listChurches(position) {
-
-		var latitude =  position.coords.latitude;
-		var longitude =  position.coords.longitude;
-
+	function listChurches() {
 		$.get("/api/nearbyChurchesView?latitude="+latitude+"&longitude="+longitude, function(data, status){
 		     $('#content').html(data);
 		 });
 	}
+
+	$(".denomination-button").click(function() {
+
+		$.get("/api/nearbyChurchesView?latitude="+latitude+"&longitude="+longitude+"&denomination="+$(this).data('denomination'), function(data, status){
+		     $('#content').html(data);
+		 });
+	});
 
 	function geoLocationError(position) {
 
@@ -31,6 +37,5 @@ $(document).ready(function() {
 			//TODO: OFFER A FALLBACK, LIKE AN ADDRESS LOOKUP
 	}
 
-
-	getLocation();
+	initiate();
 });
