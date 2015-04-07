@@ -16,7 +16,7 @@ class HomeController extends Controller {
 
 	public function getDiocese($churches) {
 
-		return 'hi';
+		return '';
 
 		$region = \App\Models\Region::find($churches[0]->region);
 		$bestguess = $region->long_name;

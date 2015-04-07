@@ -20,4 +20,9 @@ class Denomination extends Model {
 		return $this->hasMany('App\Models\Region', 'denomination_id','id');
 	}
 
+	public function churches()
+    {
+        return $this->hasManyThrough('App\Models\Church', 'App\Models\Region', 'denomination_id', 'region_id');
+    }
+
 }
