@@ -65,16 +65,4 @@ class MainController extends Controller {
 	}
 
 
-	/**
-	 * Show the application dashboard to the user.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
-		$denominations = \App\Models\Denomination::orderBy('name','ASC')->get();
-		return view('home')
-			->with('denominations',$denominations);
-	}
-
 }
