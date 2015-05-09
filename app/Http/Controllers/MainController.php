@@ -53,7 +53,7 @@ class MainController extends Controller {
 	}
 
 	/* TODO: Let's try to move this into Angular eventually */
-	public function NearbyChurchesView() {
+	public function nearbyChurchesView() {
 		
 		$result = $this->NearbyChurches();
 		return view('slices/churchlist')

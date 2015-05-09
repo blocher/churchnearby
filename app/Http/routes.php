@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'HomeController@index');
+Route::get('/api/nearbyChurchesView', 'MainController@nearbyChurchesView');
 
 Route::get('/json/{controller}/{function}', 'ApiController@json');
 Route::get('/json/{function}', 'ApiController@jsonDefaultController');
