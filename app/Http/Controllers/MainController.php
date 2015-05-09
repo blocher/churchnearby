@@ -28,8 +28,6 @@ class MainController extends Controller {
 		}
 		$possibilities = array_unique($possibilities);
 
-
-
 	}
 
 	public function nearbyChurches() {
@@ -39,7 +37,7 @@ class MainController extends Controller {
 		$denomination = Input::get('denomination','');
 		$count = Input::get('count',30);
 
-		$churches = $this->nearbyChurchList($latitude, $longitude, $count, $denomination);
+		$churches = \App\Models\Church::nearbyChurches($latitude, $longitude, $count, $denomination);
 
 		$result = array();
 		$result['latitude'] = $latitude;
@@ -54,68 +52,17 @@ class MainController extends Controller {
 
 	}
 
-	public function apiNearbyChurchesView() {
+	/* TODO: Let's try to move this into Angular eventually */
+	public function NearbyChurchesView() {
 		
-		$result = $this->apiNearbyChurches();
+		$result = $this->NearbyChurches();
 		return view('slices/churchlist')
 			->with('churches',$result['churches'])
 			->with('longitude',$result['longitude'])
 			->with('latitude',$result['latitude'])
 			//->with('diocese',$result['diocese'])
 			;
-
 	}
-
-
-	//so, let's move this to the model soon, ok, ben?
-	public function nearbyChurchList($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denomination = '') {
-
-		$latitude = floatval($latitude);
-		$longitude = floatval($longitude);
-		$count = intval($count);
-
-		$circles = array(); 
-		//
-		$distance_unit = 69;
-		$radius = 30000;
-
-		$churches = 
-		\App\Models\Church::select(DB::raw('*, ' . $distance_unit . "
-             * DEGREES(ACOS(COS(RADIANS(" . $latitude . "))
-             * COS(RADIANS(latitude))
-             * COS(RADIANS(" . $longitude . ") - RADIANS(longitude))
-             + SIN(RADIANS(" . $latitude . "))
-             * SIN(RADIANS(latitude)))) AS distance_in_miles"))
-
-			->where('latitude','>',DB::raw($latitude . "  - (" . $radius . " / " . $distance_unit . ")"))
-			->where('latitude','<',DB::raw($latitude . "  + (" . $radius . " / " . $distance_unit . ")"))
-
-			->where('longitude','>',DB::raw($longitude . " - (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
-			->where('longitude','<',DB::raw($longitude . " + (" . $radius . " / (" . $distance_unit . " * COS(RADIANS(" . $latitude . "))))"))
-			
-			;
-
-			if (!empty($denomination)) {
-				$churches = 
-					$churches->whereHas('region', function($q) use ($denomination)
-					{
-					    $q->where('denomination_id', $denomination);
-					});
-			}
-
-			$churches = $churches
-			->with('region')
-			->with('region.denomination')
-
-			->orderBy('distance_in_miles','ASC')
-			->take($count)
-			->get();
-		;
-
-		return $churches;
-
-	}
-
 
 
 	/**
