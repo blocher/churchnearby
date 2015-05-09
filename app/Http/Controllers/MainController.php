@@ -3,7 +3,7 @@
 use DB;
 use Input;
 
-class HomeController extends Controller {
+class MainController extends Controller {
 
 	/**
 	 * Create a new controller instance.
@@ -32,19 +32,22 @@ class HomeController extends Controller {
 
 	}
 
-	public function apiNearbyChurches() {
+	public function nearbyChurches() {
 		
-		$latitude = Input::get('latitude',38.813832399999995);
-		$longitude = Input::get('longitude',-77.1096706);
+		$latitude = floatval(Input::get('latitude',38.813832399999995));
+		$longitude = floatval(Input::get('longitude',-77.1096706));
 		$denomination = Input::get('denomination','');
 		$count = Input::get('count',30);
 
+		$churches = $this->nearbyChurchList($latitude, $longitude, $count, $denomination);
+
 		$result = array();
-		$result['churches'] = $this->nearbyChurches($latitude, $longitude, $count, $denomination);
 		$result['latitude'] = $latitude;
 		$result['longitude'] = $longitude;
-		$result['longitude'] = $denomination;
-		$result['count'] = count( $result['churches'] );
+		$result['denomination'] = $denomination;
+		$result['count'] = count( $churches );
+		$result['churches'] = $churches;
+		
 		//$result['diocese'] = $this->getDiocese( $result['churches'] );
 
 		return $result;
@@ -63,7 +66,9 @@ class HomeController extends Controller {
 
 	}
 
-	public function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denomination = '') {
+
+	//so, let's move this to the model soon, ok, ben?
+	public function nearbyChurchList($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denomination = '') {
 
 		$latitude = floatval($latitude);
 		$longitude = floatval($longitude);
