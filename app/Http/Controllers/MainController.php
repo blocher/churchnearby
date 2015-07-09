@@ -30,10 +30,56 @@ class MainController extends Controller {
 
 	}
 
+	private function geocode($address) {
+
+		if (empty($address)) {
+			return;
+		}
+		
+		try {
+			//TODO: move this to config file
+		    $key = '13079da9c1d29c525d3d54115d37c9d9a59a2d5';
+			$data = \Geocodio::get($address, $key);
+
+			if (!$data->response->results || !is_array($data->response->results)) {
+				return;
+			}
+			if ($data->response->results[0]->accuracy<.8) {
+				return;
+			}
+
+			$results = array();
+			$results['address'] = $data->response->results[0]->formatted_address;
+			$results['latitude'] = $data->response->results[0]->location->lat;
+			$results['longitude'] = $data->response->results[0]->location->lng;
+			return $results;
+
+		} catch (Exception $e) {
+		    return;
+		}
+
+	}
+
+
 	public function nearbyChurches() {
 		
-		$latitude = floatval(Input::get('latitude',38.813832399999995));
-		$longitude = floatval(Input::get('longitude',-77.1096706));
+		$latitude = $longitude = '';
+
+		if (Input::get('address')) {
+			$points = $this->geocode(Input::get('address'));
+			if ($points) {
+				$latitude = $points['latitude'];
+				$longitude = $points['longitude'];
+			}
+		} else {
+			$latitude = floatval(Input::get('latitude'));
+			$longitude = floatval(Input::get('longitude'));
+		}
+
+		if (empty($latitude) || empty($longitude)) {
+			return;
+		}
+		
 		$denomination = Input::get('denomination','');
 		$count = Input::get('count',30);
 

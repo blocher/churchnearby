@@ -145,6 +145,8 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
 
+		'Stanley\Geocodio\ServiceProviders\LaravelServiceProvider',
+
 	],
 
 	/*
@@ -192,6 +194,7 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+		'Geocodio'  => 'Stanley\Geocodio\Geocodio',
 
 	],
 
