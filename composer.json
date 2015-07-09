@@ -5,10 +5,11 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "5.0.*",
+		"laravel/framework": "5.1.*",
 		"sunra/php-simple-html-dom-parser": "v1.5.0",
 		"nesbot/Carbon": "*",
-		"stanley/geocodio-php": "~1.0"
+		"stanley/geocodio-php": "~1.0",
+		"laravelcollective/html": "5.1.*"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",

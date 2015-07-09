@@ -24,6 +24,16 @@ $(document).ready(function() {
 		 });
 	}
 
+	function listChurchesAddress(address) {
+		$.get("/api/nearbyChurchesView?address="+address, function(data, status){
+		     $('#content').html(data);
+		});
+	}
+
+	$("#address-button").click(function() {
+		listChurchesAddress($("#address-field").val());
+	});
+
 	$(".denomination-button").click(function() {
 
 		$.get("/api/nearbyChurchesView?latitude="+latitude+"&longitude="+longitude+"&denomination="+$(this).data('denomination'), function(data, status){

@@ -116,6 +116,7 @@ return [
 		'Illuminate\Foundation\Providers\ArtisanServiceProvider',
 		'Illuminate\Auth\AuthServiceProvider',
 		'Illuminate\Bus\BusServiceProvider',
+		'Illuminate\Broadcasting\BroadcastServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
 		'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
 		'Illuminate\Routing\ControllerServiceProvider',
@@ -146,6 +147,7 @@ return [
 		'App\Providers\RouteServiceProvider',
 
 		'Stanley\Geocodio\ServiceProviders\LaravelServiceProvider',
+		'Collective\Html\HtmlServiceProvider',
 
 	],
 
@@ -194,7 +196,10 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+
 		'Geocodio'  => 'Stanley\Geocodio\Geocodio',
+		'Form' 		=> 'Collective\Html\FormFacade',
+      	'Html' 		=> 'Collective\Html\HtmlFacade',
 
 	],
 

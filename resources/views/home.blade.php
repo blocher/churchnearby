@@ -3,6 +3,19 @@
 @section('content')
 	<div class="container">
 		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+				  <div class="panel-heading">Lookup churches by address</div>
+				  <div class="panel-body">
+						{!! Form::open() !!}
+						    {!! Form::text('address', '', array('id'=>'address-field')) !!}
+						    {!! Form::button('Look up churches',array('id'=>'address-button')); !!}
+						{!! Form::close() !!}
+				  </div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
 			<div class="col-md-3">
 				<div class="panel panel-default">
 				  <div class="panel-heading">Denominations</div>
