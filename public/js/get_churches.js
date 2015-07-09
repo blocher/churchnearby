@@ -4,31 +4,50 @@ $(document).ready(function() {
 	var latitude;
 	var longitude;
 
-	function initiate() {
-	    if (navigator.geolocation) {
-	        navigator.geolocation.getCurrentPosition(setLatLng,geoLocationError);
-	    } else {
-	        $('#content').html("Geolocation is not supported by this browser.");
-	    }
+
+	function setLatLng(lat,lng) {
+		latitude =  lat;
+		longitude =  lng;
 	}
 
-	function setLatLng(position) {
-		latitude =  position.coords.latitude;
-		longitude =  position.coords.longitude;
-		listChurches();
-	}
-
-	function listChurches() {
+	function listChurchesLatLng() {
+		$('#content').html('');
+		$('#loader').removeClass('hidden');
 		$.get("/api/nearbyChurchesView?latitude="+latitude+"&longitude="+longitude, function(data, status){
 		     $('#content').html(data);
+		     $('#loader').addClass('hidden');
 		 });
 	}
 
 	function listChurchesAddress(address) {
+		$('#content').html('');
+		$('#loader').removeClass('hidden');
 		$.get("/api/nearbyChurchesView?address="+address, function(data, status){
+		     $('#loader').addClass('hidden');
 		     $('#content').html(data);
 		});
 	}
+
+	function setCurrentPosition(position) {
+		
+		latitude =  position.coords.latitude;
+		longitude =  position.coords.longitude;
+
+		setLatLng(latitude,longitude);
+		listChurchesLatLng();
+	}
+
+	$("#nearby-button").click(function() {
+
+		$('#content').html('');
+		$('#loader').removeClass('hidden');
+		if (navigator.geolocation) {
+	        navigator.geolocation.getCurrentPosition(setCurrentPosition,geoLocationError);
+	    } else {
+	        $('#content').html("Geolocation is not supported by this browser.");
+	        $('#loader').addClass('hidden');
+	    }
+	});
 
 	$("#address-button").click(function() {
 		listChurchesAddress($("#address-field").val());
@@ -47,5 +66,4 @@ $(document).ready(function() {
 			//TODO: OFFER A FALLBACK, LIKE AN ADDRESS LOOKUP
 	}
 
-	initiate();
 });
