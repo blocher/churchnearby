@@ -60,9 +60,8 @@ class MainController extends Controller {
 
 	}
 
-
 	public function nearbyChurches() {
-		
+	
 		$latitude = $longitude = '';
 
 		if (Input::get('address')) {
