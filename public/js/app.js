@@ -1,17 +1,42 @@
 
 var app = function () {
 
+    /** Handlebars templates **/
+    var church_listings;
+    var church_summary;
+
     /*
      *  Init feed scripts
      */
     var init = function() {
 
+        var source = '';
+
+        // Init Handlebars templates
+        source   = $("#church-listings").html();
+
+        church_listings = Handlebars.compile(source);
+
+        source = $("#church-summary").html();
+        church_summary = Handlebars.compile(source);
+        Handlebars.registerPartial('church_summary',church_summary);
+
+        var churches = getChurchesByLocation(38.8137610,-77.1098310,2);
+
     };
+
 
     /*
      * Render a list of churches
      */
-    var render = function() {
+    var render = function(churches,element) {
+        
+        if (!element) {
+            element = '#content';
+        } else {
+            element = '#'+element;
+        }
+        $(element).html(church_listings(churches));
     };
 
     var getChurchesByAddress = function(address,denomination) {
@@ -45,12 +70,14 @@ var app = function () {
             data: data,
             success:  function(data, status){
                 if (status=='success' && data.status=="ok") {
-                    console.log(data);
+                    render(data);
                 } else {
+                    console.log('b');
                     console.log(data);
                 }
             },
             error: function(data) {
+                console.log('c');
                console.log(data);
             }
         });
@@ -82,7 +109,7 @@ var app = function () {
             init();
         },
         render: function() {
-            init();
+            render();
         },
         getChurchesByAddress: function(church,denomination) {
             getChurchesByAddress(church,denomination);
@@ -96,7 +123,7 @@ var app = function () {
 
 $(document).ready(function() {
     app().init();
-    app().getChurchesByLocation(38.8137610,-77.1098310,2);
+    
 });
 
 

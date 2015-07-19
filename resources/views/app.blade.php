@@ -52,9 +52,12 @@
 
 	@yield('content')
 
+	@include('templates/church-listings')
+	@include('templates/church-summary')
 	<!-- Scripts -->
 	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
 	
 	<script src="{{ asset('/js/app.js') }}" ></script>
 	<!-- <script src="{{ asset('/js/get_churches.js') }}" ></script> -->

@@ -21,9 +21,13 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
+	
 		$denominations = \App\Models\Denomination::orderBy('name','ASC')->get();
+
 		return view('home')
-			->with('denominations',$denominations);
+			->with('denominations',$denominations)
+		;
 	}
+
 	
 }
