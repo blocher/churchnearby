@@ -5,8 +5,10 @@ var app = function () {
     var church_listings;
     var church_summary;
 
+    var curent_address;
     var current_latitude;
     var current_longitude;
+    var current_denomination;
 
     /*
      *  Init feed scripts
@@ -24,21 +26,67 @@ var app = function () {
         church_summary = Handlebars.compile(source);
         Handlebars.registerPartial('church_summary',church_summary);
 
+
+        //Bind buttons
+        $('.denomination-button').click(function() {
+            changeDenomination($(this).data('denomination'));
+        });
+
+        $('#address-button').click(function() {
+            lookupAddress();
+        });
+
+        $('#nearby-button').click(function() {
+            lookupNearest();
+        });
+
+        //set initial church list
+        lookupNearest();
+    };
+
+    var changeDenomination = function(denomination) {
+
+         current_denomination = denomination;
+         
+         if (current_address) {
+
+            getChurchesByAddress(current_address,denomination);
+
+
+         } else if (current_latitude && current_longitude) {
+
+            getChurchesByLocation(current_latitude, current_longitude, denomination);
+
+         } else {
+
+         }
+    }
+
+    var lookupAddress = function() {
+       var address =  $('#address-field').val();
+       getChurchesByAddress(address,current_denomination);
+    }
+
+    var lookupNearest = function() {
+
+        console.log('here');
+        //Set initial results to closest churches
         if (navigator.geolocation) {
           position =  navigator.geolocation.getCurrentPosition(setChurches);
         } else {
           //  x.innerHTML = "Geolocation is not supported by this browser.";
         }
-
-    };
+        console.log('gone');
+    }
 
     var setChurches = function(position) {
      
         current_latitude = position.coords.latitude;
         current_longitude = position.coords.longitude;
+        current_address = '';
 
         if (current_latitude && current_longitude) {
-            var churches = getChurchesByLocation(current_latitude,current_longitude);
+            var churches = getChurchesByLocation(current_latitude,current_longitude,current_denomination);
         }
 
     }
@@ -75,12 +123,21 @@ var app = function () {
                 'longitude': longitude,
                 'denomination' : denomination,
             }
+            current_latitude = latitude;
+            current_longitude = longitude;
+            current_address = '';
         } else {
             var data = {
                 'address': address,
                 'denomination': denomination,
             };
+            current_latitude = '';
+            current_longitude = '';
+            current_address = address;
         }
+
+        current_denomination = denomination;
+
         $.ajax({
             url: endpoint,
             type: request_type,
@@ -139,6 +196,7 @@ var app = function () {
 };
 
 $(document).ready(function() {
+
     app().init();
     
 });
