@@ -32,8 +32,11 @@ class MainController extends Controller {
 
 	private function geocode($address) {
 
+		$results = array();
 		if (empty($address)) {
-			return;
+			$results['status'] = 'error';
+			$results['error'] = 'You must provide an address.';
+			return $results;
 		}
 		
 		try {
@@ -41,22 +44,29 @@ class MainController extends Controller {
 		    $key = '13079da9c1d29c525d3d54115d37c9d9a59a2d5';
 			$data = \Geocodio::get($address, $key);
 
-			if (!$data->response->results || !is_array($data->response->results)) {
-				return;
-			}
-			if ($data->response->results[0]->accuracy<.8) {
-				return;
-			}
+			if (!$data->response->results || !is_array($data->response->results) || $data->response->results[0]->accuracy<.5) {
+				$results['status'] = 'error';
+				$results['error'] = 'We were not able to determine you location from this address.  Please check the address and try again.';
+				return $results;
+			} else {
 
-			$results = array();
-			$results['address'] = $data->response->results[0]->formatted_address;
-			$results['latitude'] = $data->response->results[0]->location->lat;
-			$results['longitude'] = $data->response->results[0]->location->lng;
+				$results = array();
+				$results['status'] = 'ok';
+				$results['address'] = $data->response->results[0]->formatted_address;
+				$results['latitude'] = $data->response->results[0]->location->lat;
+				$results['longitude'] = $data->response->results[0]->location->lng;
+				$results['accuracy'] = $data->response->results[0]->accuracy;
+				return $results;
+			}
+			
+
+		} catch (BadResponseException $e) {
+			$results['status'] = 'error';
+			$results['error'] = 'There was an unknown error.  Please try again.';
 			return $results;
-
-		} catch (Exception $e) {
-		    return;
 		}
+
+		return $results;
 
 	}
 

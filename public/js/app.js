@@ -73,9 +73,9 @@ var app = function () {
         addSpinner();
         //Set initial results to closest churches
         if (navigator.geolocation) {
-          position =  navigator.geolocation.getCurrentPosition(setChurches);
+          position =  navigator.geolocation.getCurrentPosition(setChurches,geolocationError);
         } else {
-          //  x.innerHTML = "Geolocation is not supported by this browser.";
+          $('#content').html('Oops!  We can\'t automatically find the nearest churches because geolocation is not enabled on your deivce or browser.  Please enter your address instead.');
         }
     }
 
@@ -89,6 +89,19 @@ var app = function () {
             var churches = getChurchesByLocation(current_latitude,current_longitude,current_denomination);
         }
 
+    }
+
+    var geolocationError = function(error) {
+        if (error.code == error.PERMISSION_DENIED) {
+            error("You have disabled location services for this page.  Please enter your address instead.");
+        } else {
+            error("We were unable to automatically detect your address.  Please enter your address instead.");
+        }
+
+    }
+
+    var error = function(message) {
+          $('#content').html('<div class="alert alert-danger" role="alert">' + message + "</div>");
     }
 
     /*
@@ -145,13 +158,11 @@ var app = function () {
                 if (status=='success' && data.status=="ok") {
                     render(data);
                 } else {
-                    console.log('b');
-                    console.log(data);
+                    error("We couldn't find that address.  Please try again.")
                 }
             },
             error: function(data) {
-                console.log('c');
-               console.log(data);
+               error("We couldn't find that address.  Please try again.")
             }
         });
     }
@@ -174,7 +185,12 @@ var app = function () {
     var removeSpinner = function() {
         var spinner = $('.spinner');
 
+
         if (spinner) {
+            //TODO: why does content get removed first
+            spinner.each(function() {
+                $(this).parents('div').first().html('');
+            });
             spinner.remove();
         }
     };
