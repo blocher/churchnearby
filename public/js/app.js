@@ -46,8 +46,9 @@ var app = function () {
 
     var changeDenomination = function(denomination) {
 
+         addSpinner();
          current_denomination = denomination;
-         
+
          if (current_address) {
 
             getChurchesByAddress(current_address,denomination);
@@ -63,20 +64,19 @@ var app = function () {
     }
 
     var lookupAddress = function() {
+       addSpinner();
        var address =  $('#address-field').val();
        getChurchesByAddress(address,current_denomination);
     }
 
     var lookupNearest = function() {
-
-        console.log('here');
+        addSpinner();
         //Set initial results to closest churches
         if (navigator.geolocation) {
           position =  navigator.geolocation.getCurrentPosition(setChurches);
         } else {
           //  x.innerHTML = "Geolocation is not supported by this browser.";
         }
-        console.log('gone');
     }
 
     var setChurches = function(position) {
@@ -137,7 +137,6 @@ var app = function () {
         }
 
         current_denomination = denomination;
-
         $.ajax({
             url: endpoint,
             type: request_type,
@@ -160,18 +159,20 @@ var app = function () {
 
     // Add a new spinner to the page
     var addSpinner = function(element) {
-        var spinnerImg = $('<img class="feed_spinner" src="" />');
-        if (element) {
-            spinnerImg.prependTo(element);
-        }
-        else {
-            spinnerImg.prependTo(feedDiv);
-        }
+        removeSpinner();
+        if (!element) {
+            element = '#content';
+        } 
+
+        element = $(element);
+        var spinnerImg = $('<i class="spinner fa fa-spin fa-spinner fa-4x"></i>');
+        spinnerImg.prependTo(element);
+    
     };
 
     // Remove all spinners
     var removeSpinner = function() {
-        var spinner = $('.feed_spinner');
+        var spinner = $('.spinner');
 
         if (spinner) {
             spinner.remove();
