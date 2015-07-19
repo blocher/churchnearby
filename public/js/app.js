@@ -5,6 +5,9 @@ var app = function () {
     var church_listings;
     var church_summary;
 
+    var current_latitude;
+    var current_longitude;
+
     /*
      *  Init feed scripts
      */
@@ -21,10 +24,24 @@ var app = function () {
         church_summary = Handlebars.compile(source);
         Handlebars.registerPartial('church_summary',church_summary);
 
-        var churches = getChurchesByLocation(38.8137610,-77.1098310,2);
+        if (navigator.geolocation) {
+          position =  navigator.geolocation.getCurrentPosition(setChurches);
+        } else {
+          //  x.innerHTML = "Geolocation is not supported by this browser.";
+        }
 
     };
 
+    var setChurches = function(position) {
+     
+        current_latitude = position.coords.latitude;
+        current_longitude = position.coords.longitude;
+
+        if (current_latitude && current_longitude) {
+            var churches = getChurchesByLocation(current_latitude,current_longitude);
+        }
+
+    }
 
     /*
      * Render a list of churches

@@ -6,5 +6,5 @@
        {{#each churches }}
         {{> church_summary }}
        {{/each }}
-    </div>
+  </div>
 </script>
