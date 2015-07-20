@@ -198,15 +198,6 @@ var app = function () {
     return {
         init: function() {
             init();
-        },
-        render: function() {
-            render();
-        },
-        getChurchesByAddress: function(church,denomination) {
-            getChurchesByAddress(church,denomination);
-        },
-        getChurchesByLocation: function(latitude,longitude,denomination) {
-            getChurchesByLocation(latitude,longitude,denomination);
         }
     };
 

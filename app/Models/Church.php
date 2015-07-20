@@ -34,12 +34,14 @@ class Church extends Model {
 	    $radius = 30000;
 
 	    $churches = 
-	    \App\Models\Church::select(DB::raw('*, ' . $distance_unit . "
+	    \App\Models\Church::select(DB::raw('*, round(
+	    		' . $distance_unit . "
 	             * DEGREES(ACOS(COS(RADIANS(" . $latitude . "))
 	             * COS(RADIANS(latitude))
 	             * COS(RADIANS(" . $longitude . ") - RADIANS(longitude))
 	             + SIN(RADIANS(" . $latitude . "))
-	             * SIN(RADIANS(latitude)))) AS distance_in_miles"))
+	             * SIN(RADIANS(latitude))))
+	             ,2) AS distance_in_miles"))
 
 	      ->where('latitude','>',DB::raw($latitude . "  - (" . $radius . " / " . $distance_unit . ")"))
 	      ->where('latitude','<',DB::raw($latitude . "  + (" . $radius . " / " . $distance_unit . ")"))

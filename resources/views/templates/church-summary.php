@@ -5,7 +5,7 @@
     <p class="list-group-item-text">{{ city }}, {{ state }} {{ zip}}<br></p>
     <p class="list-group-item-text">Leader: {{ leader }}</p>
     <p class="list-group-item-text">{{ phone}}</p>
-    <p class="list-group-item-text"><em>{{ rdistance_in_miles }} miles away</em></p>
+    <p class="list-group-item-text"><em>{{ distance_in_miles }} miles away</em></p>
     <p><a target="_blank" href="http://maps.google.com/maps?f=q&amp;hl=en&amp;saddr={{ latitude }},{{ longitude }}&amp;daddr={{ latitude }},{{longitude }}">Driving directions</a>
     <p></p>
   </li>
