@@ -100,6 +100,7 @@ class MainController extends Controller {
 		$result['denomination'] = $denomination;
 		$result['count'] = count( $churches );
 		$result['churches'] = $churches;
+
 		
 		//$result['diocese'] = $this->getDiocese( $result['churches'] );
 

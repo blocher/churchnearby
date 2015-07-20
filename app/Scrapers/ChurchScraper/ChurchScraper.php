@@ -53,7 +53,7 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->leader = $this->extractLeader();
 		$church->latitude = $this->extractLatitude();
 		$church->longitude = $this->extractLongitude();
-		$church->name = $this->extractName();
+		$church->name = html_entity_decode($this->extractName());
 		$church->url = $this->extractURL();
 		$church->address = $this->extractAddress();
 		$church->state = $this->extractState();
