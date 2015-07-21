@@ -14,19 +14,28 @@ class MainController extends Controller {
 	{
 	}
 
-	public function getDiocese($churches) {
+	public function getRegion($churches) {
 
-		return '';
+		$num = count($churches)<5 ? count($churches) : 5;
+		
+		$region = array();
+		$region['closest_match'] = $churches[0]->region->long_name;
 
-		$region = \App\Models\Region::find($churches[0]->region);
-		$bestguess = $region->long_name;
-
-		return $bestguess;
-		$possibilities = array();
-		foreach ($churches as $church) {
-			$possibilities = $church->region->name;
+		for ($i=0;$i<$num;$i++) {
+			$regions[] = $churches[$i]->region->long_name;
 		}
-		$possibilities = array_unique($possibilities);
+
+		$regions = array_unique($regions);
+		$region['possible_matches'] = $regions;
+
+	    if (count($regions)>1) {
+	    	$region['message'] = 'This location is near the border of the following: ' . implode($regions,', ') . '.';
+	    } else if (count($regions)>0) {
+	    	$region['message'] = 'This location is in the ' . $region['closest_match'] . '.';
+	    } else {
+	    	$region = array();
+	    }
+	    return $region;
 
 	}
 
@@ -101,8 +110,7 @@ class MainController extends Controller {
 		$result['count'] = count( $churches );
 		$result['churches'] = $churches;
 
-		
-		//$result['diocese'] = $this->getDiocese( $result['churches'] );
+		$result['region'] = empty ($denomination) ? '' : $this->getRegion( $result['churches'] );
 
 		return $result;
 
@@ -116,7 +124,7 @@ class MainController extends Controller {
 			->with('churches',$result['churches'])
 			->with('longitude',$result['longitude'])
 			->with('latitude',$result['latitude'])
-			//->with('diocese',$result['diocese'])
+			->with('diocese',$result['diocese'])
 			;
 	}
 
