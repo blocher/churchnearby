@@ -11,6 +11,7 @@
 |
 */
 
+Route::get('/{denomination}', 'HomeController@index');
 Route::get('/', 'HomeController@index');
 Route::get('/api/nearbyChurchesView', 'MainController@nearbyChurchesView');
 

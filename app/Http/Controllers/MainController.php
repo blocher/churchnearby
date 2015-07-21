@@ -99,6 +99,12 @@ class MainController extends Controller {
 		}
 		
 		$denomination = Input::get('denomination','');
+		if (is_numeric($denomination)) {
+			$denomination = \App\Models\Denomination::find($denomination);
+		} else {
+			$denomination = \App\Models\Denomination::where('slug',$denomination)->first();;
+		}
+		
 		$count = Input::get('count',30);
 
 		$churches = \App\Models\Church::nearbyChurches($latitude, $longitude, $count, $denomination);

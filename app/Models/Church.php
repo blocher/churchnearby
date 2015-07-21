@@ -52,6 +52,10 @@ class Church extends Model {
 	      ;
 
 	      if (!empty($denomination)) {
+
+	      	if (is_object($denomination)) {
+	      		$denomination = $denomination->id;
+	      	}
 	        $churches = 
 	          $churches->whereHas('region', function($q) use ($denomination)
 	          {

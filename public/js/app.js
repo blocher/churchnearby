@@ -5,6 +5,7 @@ var app = function () {
     var church_listings;
     var church_summary;
 
+    /** Current query **/
     var curent_address;
     var current_latitude;
     var current_longitude;
@@ -40,33 +41,79 @@ var app = function () {
             lookupNearest();
         });
 
+        var pathArray = window.location.pathname.split( '/' );
+        if (pathArray[1]) {
+            current_denomination = pathArray[1];
+        } else {
+            current_denomination = '';
+        }
+
+        current_latitude = getParameterByName('latitude');
+        current_longitude = getParameterByName('longitude');
+        current_address = getParameterByName('address');
+
+        display();
+
+        //Bind history change
+        window.onpopstate = function(event) {
+          current_address = event.state.current_address;
+          current_latitude = event.state.current_latitude;
+          current_longitude = event.state.current_longitude;
+          current_denomination = event.state.current_denomination;
+          display();
+        };
+
         //set initial church list
-        lookupNearest();
+        //lookupNearest();
     };
 
+    var getParameterByName = function(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
     var changeDenomination = function(denomination) {
+        current_denomination = denomination;
+        display();
+    }
 
-         addSpinner();
-         current_denomination = denomination;
+    var display = function() {
 
-         if (current_address) {
+        addSpinner();
 
-            getChurchesByAddress(current_address,denomination);
+        if (current_address) {
+            getChurchesByAddress(current_address,current_denomination);
+        } else if (current_latitude && current_longitude) {
+            getChurchesByLocation(current_latitude, current_longitude, current_denomination);
+        } else {
+            error('Please click "View Nearest Churches" or enter an address above.');
+        }
 
-
-         } else if (current_latitude && current_longitude) {
-
-            getChurchesByLocation(current_latitude, current_longitude, denomination);
-
-         } else {
-
-         }
     }
 
     var lookupAddress = function() {
        addSpinner();
        var address =  $('#address-field').val();
        getChurchesByAddress(address,current_denomination);
+    }
+
+    var changeURL = function() {
+
+         var stateObj = {
+            current_address: current_address,
+            current_denomination: current_denomination,
+            current_latitude: current_latitude,
+            current_longitude: current_longitude
+         };
+         history.pushState(stateObj,
+            current_denomination,
+            current_denomination
+                + '?latitude=' + current_latitude + '&longitude=' + current_longitude  +
+                  '&address=' + current_address
+            );
+
     }
 
     var lookupNearest = function() {
@@ -158,11 +205,13 @@ var app = function () {
                 if (status=='success' && data.status=="ok") {
                     render(data);
                 } else {
-                    error("We couldn't find that address.  Please try again.")
+                    error("We couldn't find that address.  Please try again.");
                 }
+                changeURL();
             },
             error: function(data) {
-               error("We couldn't find that address.  Please try again.")
+               error("We couldn't find that address.  Please try again.");
+               changeURL();
             }
         });
     }

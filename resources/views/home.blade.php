@@ -6,7 +6,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="page-header">
-					  <h1><span class="fa fa-plus"></span>Nearest Churches</h1>
+					  <h1>
+					  	Nearest Churches
+					 </h1>
 				</div>
 			</div>
 		</div> <!--row -->
@@ -45,7 +47,7 @@
 				  <div class="panel-body">
 						@foreach ($denominations as $denomination)
 					
-							<button type="button" class="btn btn-primary denomination-button" data-denomination="{{ $denomination->id }}">
+							<button type="button" class="btn btn-primary denomination-button" data-denomination="{{ $denomination->slug }}">
 							{{ $denomination->tag_name }}
 							</button>
 				
