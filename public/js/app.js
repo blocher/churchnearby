@@ -104,6 +104,18 @@ var app = function () {
 
     var changeURL = function() {
 
+         var title;
+         var url;
+         if (current_denomination) {
+            title = "Churches Nearby: " + current_denomination;
+            url = current_denomination;
+         } else {
+            title = "Churches Nearby: ";
+            url = '';
+         }
+
+         sendGAPageview(url,title);
+
          if (popstate) {
             popstate = false;
             return;
@@ -116,8 +128,8 @@ var app = function () {
             current_longitude: current_longitude
          };
          history.pushState(stateObj,
-            current_denomination,
-            current_denomination
+            title,
+            url
                 + '?latitude=' + current_latitude + '&longitude=' + current_longitude  +
                   '&address=' + current_address
             );
@@ -222,6 +234,18 @@ var app = function () {
                changeURL();
             }
         });
+    }
+
+    var sendGAPageview = function(url,title) {
+
+        console.log(url);
+        console.log(title);
+
+        ga('set', {
+          page: '/' + url,
+          title: title
+        });
+        ga('send', 'pageview');
     }
 
 
