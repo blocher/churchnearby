@@ -11,6 +11,8 @@ var app = function () {
     var current_longitude;
     var current_denomination;
 
+    var popstate = false;
+
     /*
      *  Init feed scripts
      */
@@ -60,6 +62,7 @@ var app = function () {
           current_latitude = event.state.current_latitude;
           current_longitude = event.state.current_longitude;
           current_denomination = event.state.current_denomination;
+          popstate = true;
           display();
         };
 
@@ -100,6 +103,11 @@ var app = function () {
     }
 
     var changeURL = function() {
+
+         if (popstate) {
+            popstate = false;
+            return;
+         }
 
          var stateObj = {
             current_address: current_address,
