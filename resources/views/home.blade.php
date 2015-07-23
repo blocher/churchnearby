@@ -9,6 +9,7 @@
 					  <h1>
 					  	Nearest Churches
 					 </h1>
+					 <div id="denomination"></div>
 				</div>
 			</div>
 		</div> <!--row -->

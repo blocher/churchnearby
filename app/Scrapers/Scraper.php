@@ -57,9 +57,9 @@ abstract class Scraper {
 			CURLOPT_URL => $url . (strpos($url, '?') === FALSE ? '?' : '') . http_build_query($fields),
 			CURLOPT_HEADER => 0,
 			CURLOPT_RETURNTRANSFER => TRUE,
-			CURLOPT_TIMEOUT => 30
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.12) Gecko/20101026 Firefox/3.6.12',
 		];
-
 		$ch = curl_init();
 		curl_setopt_array($ch, ($options + $defaults));
 
@@ -101,5 +101,7 @@ abstract class Scraper {
 
 		echo PHP_EOL;
 	}
+
+
 
 }

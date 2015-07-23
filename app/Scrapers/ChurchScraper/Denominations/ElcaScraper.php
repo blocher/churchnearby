@@ -98,16 +98,6 @@ class ElcaScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	
 	}
 
-	/**
-	*
-	* Helpers to clean results
-	*
-	*/
-
-	private static function clean($string) {
-		return html_entity_decode(trim($string));
-	}
-
 
 	/**
 	*

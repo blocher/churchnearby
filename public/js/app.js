@@ -182,6 +182,11 @@ var app = function () {
             element = '#'+element;
         }
         $(element).html(church_listings(churches));
+        if (churches.denomination && churches.denomination.name) {
+            $('#denomination').html("<h3>" + churches.denomination.name + "</h3>");
+        } else {
+             $('#denomination').html("");
+        }
     };
 
     var getChurchesByAddress = function(address,denomination) {
@@ -223,6 +228,7 @@ var app = function () {
             data: data,
             success:  function(data, status){
                 if (status=='success' && data.status=="ok") {
+                    console.log(data);
                     render(data);
                 } else {
                     error("We couldn't find that address.  Please try again.");

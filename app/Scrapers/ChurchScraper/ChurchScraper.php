@@ -64,7 +64,12 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->twitter = $this->extractTwitter();
 		$church->facebook = $this->extractFacebook();
 		$church->region_id = $this->extractRegion();
-		$church->save();
+		foreach ($church->getAttributes() as $key=>$value) {
+			$church->$key = ChurchScraper::clean($value);
+		}
+		var_dump($church); die();
+		//$church->save();
+		return $church;
 	}
 
 	abstract protected function getDenominationSlug();
@@ -87,6 +92,15 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$denomination->color = $region_name_plural = $this->getDenominationColor();
 		$denomination->save();
 		return $denomination->id;
+	}
+
+	/**
+	*
+	* Helper to clean results
+	*
+	*/
+	protected static function clean($string) {
+		return html_entity_decode(trim($string));
 	}
 
 }
