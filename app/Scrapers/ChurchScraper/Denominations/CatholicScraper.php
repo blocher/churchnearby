@@ -10,23 +10,55 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	protected $denomination_slug = 'catholic';
 	protected $denomination_id;
 
-	private $current_synod;
+	private $current_diocese;
 	private $current_church;
 	private $current_id;
 	private $current_map;
 
 	/* the main scrape function to kick it off*/
-	public function scrape() {
+	public function scrape($start_state='',$start_city='') {
+		$start_city = str_replace(' ','%20',$start_city);
+		$start_state = str_replace(' ','%20',$start_state);
 		$states = $this->getStates();
 		foreach ($states as $state) {
+			$state_abbr = $this->extractParams($state)['state'];
+			if (!empty($start_state) and $state_abbr!=$start_state) {
+				continue;
+			}
+			$start_state = '';
 			$cities = $this->getCities($state);
 			foreach ($cities as $city) {
+				$city_name = $this->extractParams($city)['absolutecity'];
+				if (!empty($start_city) and $city_name!=$start_city) {
+					continue;
+				}
+				$start_city = '';
 				$parishes = $this->getParishes($city);
 				foreach ($parishes as $parish) {
 					$parish = $this->getParish($parish);
 				}
 			}
 		}
+	}
+
+
+	public function resume() {
+		$last_updated_church = \App\Models\Church::whereHas('region', function($q)
+		{
+		    $q->whereHas('denomination',function($q)
+			{
+				$q->where('id',$this->denomination_id);
+			});
+		})
+		->where('city','!=','')
+		->where('state','!=','')
+		->orderBy('updated_at','desc')
+		->first();
+
+		 $state = $last_updated_church->state;
+		 $city = $last_updated_church->city;
+		 $this->scrape($state,$city);
+		
 	}
 
 
@@ -88,7 +120,7 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		if (empty($url)) {
 			return;
 		}
-
+ 
 		$url = $url . '&viewall=true&sort=alpha';
 		$response = $this->get($url);
 		$html  = HtmlDomParser::str_get_html($response);
@@ -99,31 +131,33 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	}
 
+	private function getDiocese() {
 
 
+		$html = $this->church_html->find("a[href*=display_site_info]",0);
+		if (!is_object($html)) {
+			return '';
+		}
+		$long_name = $html->plaintext;
+		$short_name = str_ireplace('Archdiocese of', '', $long_name);
+		$short_name = str_ireplace('Diocese of', '', $short_name);
+		$short_name = str_ireplace('Archdiocese of', '', $short_name);
+		$short_name = str_ireplace('Eparchy of', '', $short_name);
+		
+		$slug = preg_replace("/[^A-Za-z0-9]/", '_', self::clean(strtolower($short_name)));
 
-	private function setSynod($synod) {
-		$short_name = substr($synod,5);
-		$short_name = str_replace(' Synod, ELCA','',$short_name);
-		$short_name = str_replace(', ELCA','',$short_name);
-		$long_name = $short_name . ' ' . 'Synod';
-		$slug = preg_replace("/[^A-Za-z0-9]/", '_', strtolower($short_name));
-		$id = substr($synod,0,2);
+		$region = \App\Models\Region::firstOrNew(array('slug'=>$slug,'denomination_id'=>$this->denomination_id));
 
-		$region = \App\Models\Region::firstOrNew(array('slug' => $slug, 'denomination_id' => $this->denomination_id));
 		$region->slug = $slug;
-		$region->long_name = $long_name;
-		$region->short_name = $short_name;
+		$region->long_name = self::clean($long_name);
+		$region->short_name = self::clean($short_name);
 		$region->url = '';
 		$region->denomination_id = $this->denomination_id;
-		$region->save();
-		$this->current_synod = $region->id;
-		return $region->id;
-	}
-
-	public function resume() {
 		
-	
+		$region->save();
+		$this->current_diocese = $region->id;
+		return $region->id;
+
 	}
 
 
@@ -146,19 +180,36 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	private function setMapParams() {
 
-		$url = $this->church_html->find("a[href*=search_location&]",0)->href;
-		$params = $this->extractMapParams($url);
-		$params['address'] = $this->extractMapAddress($params['addr']);
+		$url = $this->church_html->find("a[href*=search_location&]",0);
 
-		$this->current_map = '';
+
+		if (!is_object($url)) {
+
+			$params['lat'] = '';
+			$params['lng'] = '';
+			$params['address']['street'] = '';
+			$params['address']['city'] = '';
+			$params['address']['state'] = '';
+			$params['address']['zip'] = '';
+
+		} else {
+			$url = $url->href;
+			$params = $this->extractParams($url);
+			if (isset($params['addr'])) {
+				$params['address'] = $this->extractMapAddress($params['addr']);
+			}
+		}
+
 		$this->current_map  = $params;
+		
 
 	}
 
 
-	private function extractMapParams($url) {
+	private function extractParams($url) {
 		
 		$url = explode('?',$url)[1];
+		$url = str_replace(' & ',' and ',$url);
 		$parts = explode('&',$url);
 		$parms = array();
 		foreach ($parts as $part) {
@@ -172,25 +223,26 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private function extractMapAddress($addr) {
 
 		$addr = explode(',',$addr);
+
 		foreach ($addr as &$value) {
 			$value = trim($value);
 		}
-		$address = array();
+		$address = array('street'=>[],'city'=>'','state'=>'','zip'=>'');
 		while($component=array_pop($addr)) {
 			if ($component == 'US') {
 				continue;
 			}
-			if (!isset($address['zip'] )&& preg_match('/^[0-9]{5}([- ]?[0-9]{4})?$/',$component)) {
+			if (empty($address['zip'] )&& preg_match('/^[0-9]{5}([- ]?[0-9]{4})?$/',$component)) {
 				$address['zip'] = $component;
 				continue;
 			}
 
-			if (!isset($address['state']) && strlen($component)==2) {
+			if (empty($address['state']) && strlen($component)==2) {
 				$address['state'] = $component;
 				continue;
 			}
 
-			if (!isset($address['city'])) {
+			if (empty($address['city'])) {
 				$address['city'] = $component;
 				continue;
 			}
@@ -224,12 +276,12 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	public function extractLatitude() {
-		return $this->current_map['lat'];
+		return isset($this->current_map['lat']) ? $this->current_map['lat'] : '';
 
 	}
 
 	public function extractLongitude() {
-		return $this->current_map['lon'];
+		return isset($this->current_map['lon']) ? $this->current_map['lon'] : '';
 	}
 
 	public function extractName() {
@@ -244,19 +296,19 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	public function extractAddress() {
-		return $this->current_map['address']['street'];
+		return isset($this->current_map['address']['street']) ? $this->current_map['address']['street'] : '';
 	}
 
 	public function extractState() {
-		return $this->current_map['address']['state'];
+		return isset($this->current_map['address']['state']) ? $this->current_map['address']['state'] : '';
 	}
 
 	public function extractCity() {
-		return $this->current_map['address']['city'];
+		return isset($this->current_map['address']['city']) ? $this->current_map['address']['city'] : '';
 	}
 
 	public function extractZip() {
-		return $this->current_map['address']['zip'];
+		return isset($this->current_map['address']['zip']) ? $this->current_map['address']['zip'] : '';
 	}
 
 	public function extractEmail() {
@@ -278,39 +330,39 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	public function extractRegion() {
-		//return $this->current_synod;
+		return $this->getDiocese();
 	}
 
 
 	//Denomination stuff
 	protected function getDenominationSlug() {
-		return 'elca';
+		return 'catholic';
 	}
 	
 	protected function getDenominationName() {
-		return 'Evangelical Lutheran Church in America';
+		return 'The Roman Catholic Church';
 	}
 	
 	protected function getDenominationUrl() {
-		return 'http://www.elca.org';
+		return 'http://w2.vatican.va/content/vatican/en.html';
 
 	}
 	
 	protected function getDenominationRegionName() {
-		return 'Synods';
+		return 'Dioceses';
 
 	}
 	
 	protected function getDenominationRegionNamePlural() {
-		return 'Synods';
+		return 'Diocese';
 	}
 	
 	protected function getDenominationTagName() {
-		return 'Lutheran (ELCA)';
+		return 'Catholic';
 	}
 
 	protected function getDenominationColor() {
-		return 'Green';
+		return 'Red';
 
 	}
 

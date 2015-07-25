@@ -32,6 +32,13 @@ class EpiscopalScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		
 		 $last_updated_letter = strtoupper(substr($last_updated_church->name,0,1));
 		 $this->scrape($last_updated_letter);
+
+		$state = $last_update_church->state;
+		$city = $last_update_church->city;
+
+		echo $state;
+		echo $city;
+		die();
 	}
 
 	/*step 1*/

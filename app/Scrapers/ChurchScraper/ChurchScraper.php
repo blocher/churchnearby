@@ -48,7 +48,17 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	/* save the church */
 	public function saveChurch() {
 		$id = $this->extractExternalID();
-		$church = \App\Models\Church::firstOrNew(array('external_id' => $id));
+
+		$church =  \App\Models\Church::whereHas('region', function($q)
+		{
+		    $q->where('denomination_id', $this->denomination_id);
+
+		})
+		->where('external_id', $id)
+		->first();
+		if (empty($church)) {
+			$church = new \App\Models\Church();
+		}
 		$church->external_id = $id;
 		$church->leader = $this->extractLeader();
 		$church->latitude = $this->extractLatitude();
@@ -65,10 +75,15 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$church->facebook = $this->extractFacebook();
 		$church->region_id = $this->extractRegion();
 		foreach ($church->getAttributes() as $key=>$value) {
-			$church->$key = ChurchScraper::clean($value);
+			if ($value != NULL) {
+				$church->$key = ChurchScraper::clean($value);
+			}
 		}
-		var_dump($church); die();
-		//$church->save();
+		if (empty($church->region_id)) {
+			echo 'ERROR: ' . $church->name . PHP_EOL;
+		} else {
+			$church->save();
+		}
 		return $church;
 	}
 

@@ -51,7 +51,7 @@ class Scraper extends Command {
 		$scraper = new $class;
 
 		if ($this->option('resume')) {
-			$this->info('The scraper will attemp to resume from where it left off.');
+			$this->info('The scraper will attempt to resume from where it left off.');
 			$scraper->resume();
 		} else {
 			$scraper->scrape();
