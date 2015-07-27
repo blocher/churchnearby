@@ -15,6 +15,17 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	private $current_id;
 	private $current_map;
 
+	private $primary = true;
+	protected $secondary_denomination_id;
+
+	function __construct() {
+	   parent::__construct();
+	   $this->primary = false;
+       $this->secondary_denomination_id =  $this->saveDenomination();
+       $this->primary = true;
+   	}
+
+
 	/* the main scrape function to kick it off*/
 	public function scrape($start_state='',$start_city='') {
 		$start_city = str_replace(' ','%20',$start_city);
@@ -131,29 +142,55 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	}
 
+	private function getUnknownDiocse() {
+
+		$long_name = 'Unknown Diocese';
+		$short_name = 'Unknown';
+		$slug = 'unknown';
+		
+		$slug = preg_replace("/[^A-Za-z0-9]/", '_', self::clean(strtolower($short_name)));
+
+	}
+
 	private function getDiocese() {
 
 
 		$html = $this->church_html->find("a[href*=display_site_info]",0);
 		if (!is_object($html)) {
-			return '';
+			$long_name = 'Unknown Diocese';
+			$short_name = 'Unknown';
+			$slug = 'unknown';
+		} else {
+			$long_name = $html->plaintext;
+			if (stripos($long_name,'diocese')===false && stripos($long_name,'eparchy')===false) {
+				$long_name = 'Subdivision';
+				$short_name = 'Subdivision';
+				$slug = 'subdivison';
+			} else {
+				$short_name = str_ireplace('Archdiocese of', '', $long_name);
+				$short_name = str_ireplace('Diocese of', '', $short_name);
+				$short_name = str_ireplace('Archeparchy of', '', $short_name);
+				$short_name = str_ireplace('Eparchy of', '', $short_name);
+				$short_name = str_ireplace('Eparch of', '', $short_name);
+				$slug = preg_replace("/[^A-Za-z0-9]/", '_', self::clean(strtolower($short_name)));
+			}
 		}
-		$long_name = $html->plaintext;
-		$short_name = str_ireplace('Archdiocese of', '', $long_name);
-		$short_name = str_ireplace('Diocese of', '', $short_name);
-		$short_name = str_ireplace('Archdiocese of', '', $short_name);
-		$short_name = str_ireplace('Eparchy of', '', $short_name);
-		
-		$slug = preg_replace("/[^A-Za-z0-9]/", '_', self::clean(strtolower($short_name)));
 
-		$region = \App\Models\Region::firstOrNew(array('slug'=>$slug,'denomination_id'=>$this->denomination_id));
+		$rite = $this->getRite();
+		$denomination_id = '';
+		if (stripos($rite,'Roman')!==false || stripos($rite,'Latin')!==false) {
+			$denomination_id = $this->denomination_id;
+		} else {
+			$denomination_id = $this->secondary_denomination_id;
+		}	
+
+		$region = \App\Models\Region::firstOrNew(array('slug'=>$slug,'denomination_id'=>$denomination_id));
 
 		$region->slug = $slug;
 		$region->long_name = self::clean($long_name);
 		$region->short_name = self::clean($short_name);
 		$region->url = '';
-		$region->denomination_id = $this->denomination_id;
-		
+		$region->denomination_id = $denomination_id;
 		$region->save();
 		$this->current_diocese = $region->id;
 		return $region->id;
@@ -212,9 +249,13 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$url = str_replace(' & ',' and ',$url);
 		$parts = explode('&',$url);
 		$parms = array();
-		foreach ($parts as $part) {
+		foreach ($parts as $key=>$part) {
 			$part = explode('=',$part);
-			$parms[$part[0]] = $part[1];
+			if (!isset($part[1]) && isset($parms['addr'])) {
+				$parms['addr'] = $parms['addr'] . $part[0];
+			} else {
+				$parms[$part[0]] = $part[1];
+			}
 		}
 
 		return $parms;
@@ -232,7 +273,7 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 			if ($component == 'US') {
 				continue;
 			}
-			if (empty($address['zip'] )&& preg_match('/^[0-9]{5}([- ]?[0-9]{4})?$/',$component)) {
+			if (empty($address['zip']) && preg_match('/^[0-9]{5}([- ]?[0-9]{4})?$/',$component)) {
 				$address['zip'] = $component;
 				continue;
 			}
@@ -256,7 +297,16 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	}
 
+	public function getRite() {
 
+		$item = $this->church_html->find('span [itemprop=rite]',0);
+		if (!is_object($item)) {
+			return 'Roman Rite';
+		}
+		$item = $item->plaintext;
+		$item = trim($item);
+		return $item;
+	}
 	/**
 	*
 	* These methods extract properties; implement abstract classes
@@ -285,7 +335,13 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	public function extractName() {
-		return $this->church_html->find('.PageTitleListing',0)->plaintext;
+
+		$name = $this->church_html->find('.PageTitleListing',0)->plaintext;
+		$rite = $this->getRite();
+		if (stripos($rite,'Roman')===false && stripos($rite,'Latin')===false) {
+			$name .= ' (' . $rite . ')';
+		}
+		return $name;
 	}
 
 	public function extractURL() {
@@ -316,7 +372,11 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 
 	public function extractPhone() {
-		$item = $this->church_html->find('span [itemprop=telephone]',0)->plaintext;
+		$item = $this->church_html->find('span [itemprop=telephone]',0);
+		if (!is_object($item)) {
+			return '';
+		}
+		$item = $item->plaintext;
 		$item = $this->parsePhone($item);
 		return $item;
 	}
@@ -336,10 +396,16 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 	//Denomination stuff
 	protected function getDenominationSlug() {
+		if ($this->primary==false) {
+			return 'easterncatholic';
+		}
 		return 'catholic';
 	}
 	
 	protected function getDenominationName() {
+		if ($this->primary==false) {
+			return 'Catholic Church (Eastern Rites)';
+		}
 		return 'The Roman Catholic Church';
 	}
 	
@@ -349,15 +415,24 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 	}
 	
 	protected function getDenominationRegionName() {
+		if ($this->primary==false) {
+			return 'Eparchies';
+		}
 		return 'Dioceses';
 
 	}
 	
 	protected function getDenominationRegionNamePlural() {
+		if ($this->primary==false) {
+			return 'Eparchy';
+		}
 		return 'Diocese';
 	}
 	
 	protected function getDenominationTagName() {
+		if ($this->primary==false) {
+			return 'Catholic (Eastern)';
+		}
 		return 'Catholic';
 	}
 

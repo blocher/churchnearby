@@ -8,6 +8,7 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 	protected $church_html = '';
 	protected $denomination_slug = '';
 	protected $denomination_id;
+	protected $secondary_denomination_id;
 
 	function __construct() {
        $this->denomination_id =  $this->saveDenomination();
