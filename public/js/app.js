@@ -228,7 +228,6 @@ var app = function () {
             data: data,
             success:  function(data, status){
                 if (status=='success' && data.status=="ok") {
-                    console.log(data);
                     render(data);
                 } else {
                     error("We couldn't find that address.  Please try again.");
@@ -243,9 +242,6 @@ var app = function () {
     }
 
     var sendGAPageview = function(url,title) {
-
-        console.log(url);
-        console.log(title);
 
         ga('set', {
           page: '/' + url,
