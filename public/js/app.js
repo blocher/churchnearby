@@ -1,5 +1,5 @@
 
-var app = function () {
+var app = function() {
 
     /** Handlebars templates **/
     var church_listings;
@@ -22,13 +22,20 @@ var app = function () {
 
         // Init Handlebars templates
         source   = $("#church-listings").html();
-
         church_listings = Handlebars.compile(source);
 
         source = $("#church-summary").html();
         church_summary = Handlebars.compile(source);
         Handlebars.registerPartial('church_summary',church_summary);
 
+        source   = $("#denomination-listings").html();
+        denomination_listings = Handlebars.compile(source);
+
+        source = $("#denomination-summary").html();
+        denomination_summary = Handlebars.compile(source);
+        Handlebars.registerPartial('denomination-summary',denomination_summary);
+
+        getDenominations();
 
         //Bind buttons
         $('.denomination-button').click(function() {
@@ -69,6 +76,29 @@ var app = function () {
         //set initial church list
         //lookupNearest();
     };
+
+    var getDenominations = function() {
+
+        var endpoint = '/api/denominations';
+        var request_type = 'GET';
+        $.ajax({
+            url: endpoint,
+            type: request_type,
+            success:  function(data, status){
+                if (status=='success' && data.status=="ok") {
+                    console.log(data); console.log(data.denominations);
+                    $('#denominations').html(denomination_listings(data));
+                } else {
+                    error("We couldn't find that address.  Please try again.");
+                }
+            },
+            error: function(data) {
+               error("We couldn't find that address.  Please try again.");
+            }
+        });
+
+    }
+
 
     var getParameterByName = function(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

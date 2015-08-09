@@ -122,9 +122,17 @@ class MainController extends Controller {
 
 	}
 
+	public function denominations() {
+
+		$denominations = $churches = \App\Models\Denomination::orderBy('tag_name')->get();
+		$result = [];
+		$result['denominations'] = $denominations;
+		return $result;
+	}
+
 	/* TODO: Let's try to move this into Angular eventually */
 	public function nearbyChurchesView() {
-		
+		dd('here');
 		$result = $this->NearbyChurches();
 		return view('slices/churchlist')
 			->with('churches',$result['churches'])
