@@ -98,23 +98,18 @@ class MainController extends Controller {
 			return;
 		}
 		
-		$denomination = Input::get('denomination','');
-		if (is_numeric($denomination)) {
-			$denomination = \App\Models\Denomination::find($denomination);
-		} else {
-			$denomination = \App\Models\Denomination::where('slug',$denomination)->first();;
+		$denominations = Input::get('denomination','');
+		if (!empty($denominations)) {
+			$denominations = explode(',',$denominations);
 		}
 		
 		$count = Input::get('count',30);
 
-		$churches = \App\Models\Church::nearbyChurches($latitude, $longitude, $count, $denomination);
+		$result = \App\Models\Church::nearbyChurches($latitude, $longitude, $count, $denominations);
 
-		$result = array();
 		$result['latitude'] = $latitude;
 		$result['longitude'] = $longitude;
-		$result['denomination'] = $denomination;
-		$result['count'] = count( $churches );
-		$result['churches'] = $churches;
+		$result['count'] = count( $result['churches'] );
 
 		$result['region'] = empty ($denomination) ? '' : $this->getRegion( $result['churches'] );
 
@@ -129,18 +124,4 @@ class MainController extends Controller {
 		$result['denominations'] = $denominations;
 		return $result;
 	}
-
-	/* TODO: Let's try to move this into Angular eventually */
-	public function nearbyChurchesView() {
-		dd('here');
-		$result = $this->NearbyChurches();
-		return view('slices/churchlist')
-			->with('churches',$result['churches'])
-			->with('longitude',$result['longitude'])
-			->with('latitude',$result['latitude'])
-			->with('diocese',$result['diocese'])
-			;
-	}
-
-
 }

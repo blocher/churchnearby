@@ -38,9 +38,7 @@ var app = function() {
         getDenominations();
 
         //Bind buttons
-        $('.denomination-button').click(function() {
-            changeDenomination($(this).data('denomination'));
-        });
+
 
         $('#address-button').click(function() {
             lookupAddress();
@@ -86,14 +84,16 @@ var app = function() {
             type: request_type,
             success:  function(data, status){
                 if (status=='success' && data.status=="ok") {
-                    console.log(data); console.log(data.denominations);
                     $('#denominations').html(denomination_listings(data));
+                    $('.denomination-button').click(function() {
+                        changeDenomination($(this).data('denomination'));
+                    });
                 } else {
-                    error("We couldn't find that address.  Please try again.");
+                    error("We couldn't find the denomiation list.  Please try again.");
                 }
             },
             error: function(data) {
-               error("We couldn't find that address.  Please try again.");
+               error("We couldn't find the denomiation list.   Please try again.");
             }
         });
 
@@ -108,6 +108,8 @@ var app = function() {
     }
 
     var changeDenomination = function(denomination) {
+        $('.denomination-button').removeClass('btn-danger').addClass('btn-primary');
+        $('button.denomination-button[data-denomination="' + denomination + '"]').removeClass('btn-primary').addClass('btn-danger');
         current_denomination = denomination;
         display();
     }

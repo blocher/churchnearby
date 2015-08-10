@@ -22,7 +22,7 @@ class Church extends Model {
 		return $this->belongsTo('\App\Models\Region','region_id','id');
 	}
 
-	public static function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denomination = '') {
+	public static function nearbyChurches($latitude=38.813832399999995,$longitude=-77.1096706, $count=30, $denominations = '') {
 
 	    $latitude = floatval($latitude);
 	    $longitude = floatval($longitude);
@@ -51,16 +51,38 @@ class Church extends Model {
 	      
 	      ;
 
-	      if (!empty($denomination)) {
+	      if (!empty($denominations)) {
 
-	      	if (is_object($denomination)) {
-	      		$denomination = $denomination->id;
+	      	//can accept a string of one or multiple comma separate denomiations, seperated by commas
+	  		// Or, if it's already an array, let's move on
+	      	if (!is_array($denominations)) {
+	      		$denominations = explode(',',$denominations);
 	      	}
+
+	      	//accepts denomiation objects, OR denomination IDs, OR denomination slug, BUT coverts all to IDs here
+	      	$ids = array();
+	      	foreach ($denominations as $denomination) {
+
+	      		if (is_object($denomination) && isset($denomination->id)) {
+		      		$ids[] = $denomination->id;
+		      	}  else if (is_numeric($denomination)) {
+		      		$ids[] = $denomination;
+		      	} else  {
+		      		$denomination = \App\Models\Denomination::where('slug',$denomination)->first();
+		      		if (is_object($denomination) && isset($denomination->id)) {
+		      			$ids[] = $denomination->id;
+		      		}
+		      	}
+	      	}
+
 	        $churches = 
-	          $churches->whereHas('region', function($q) use ($denomination)
+	          $churches->whereHas('region', function($q) use ($ids)
 	          {
-	              $q->where('denomination_id', $denomination);
+	              $q->whereIn('denomination_id', $ids);
 	          });
+
+	        $denominations = \App\Models\Denomination::whereIn('id',$ids)->get();
+
 	      }
 
 	      $churches = $churches
@@ -72,7 +94,11 @@ class Church extends Model {
 	      ->get();
 	    ;
 
-	    return $churches;
+	    $result = [];
+	    $result['churches'] = $churches;
+	    $result['denominations'] = $denominations;
+
+	    return $result;
 
 	}
 

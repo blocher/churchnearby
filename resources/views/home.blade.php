@@ -46,13 +46,7 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">Denominations</div>
 				  <div class="panel-body" id="denominations">
-						@foreach ($denominations as $denomination)
-					
-							<button type="button" class="btn btn-primary denomination-button" data-denomination="{{ $denomination->slug }}">
-							{{ $denomination->tag_name }}
-							</button>
-				
-						@endforeach
+						<i class="fa fa-cog fa-spin"></i>
 				  </div>
 				</div>
 			</div>
