@@ -98,7 +98,7 @@ class MainController extends Controller {
 			return;
 		}
 		
-		$denominations = Input::get('denomination','');
+		$denominations = Input::get('denominations','');
 		if (!empty($denominations)) {
 			$denominations = explode(',',$denominations);
 		}

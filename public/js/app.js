@@ -9,7 +9,7 @@ var app = function() {
     var curent_address;
     var current_latitude;
     var current_longitude;
-    var current_denomination;
+    var current_denominations;
 
     var popstate = false;
 
@@ -50,9 +50,9 @@ var app = function() {
 
         var pathArray = window.location.pathname.split( '/' );
         if (pathArray[1]) {
-            current_denomination = pathArray[1];
+            current_denominations = pathArray[1];
         } else {
-            current_denomination = '';
+            current_denominations = getParameterByName('current_denominations');
         }
 
         current_latitude = getParameterByName('latitude');
@@ -66,7 +66,7 @@ var app = function() {
           current_address = event.state.current_address;
           current_latitude = event.state.current_latitude;
           current_longitude = event.state.current_longitude;
-          current_denomination = event.state.current_denomination;
+          current_denominations = event.state.current_denominations;
           popstate = true;
           display();
         };
@@ -108,9 +108,13 @@ var app = function() {
     }
 
     var changeDenomination = function(denomination) {
-        $('.denomination-button').removeClass('btn-danger').addClass('btn-primary');
-        $('button.denomination-button[data-denomination="' + denomination + '"]').removeClass('btn-primary').addClass('btn-danger');
-        current_denomination = denomination;
+        $('button.denomination-button[data-denomination="' + denomination + '"]').toggleClass('active');
+        var denominations = [];
+        $('button.denomination-button.active').each(function() {
+            denominations.push($(this).data('denomination'));
+        });
+        denominations = denominations.join(',');
+        current_denominations = denominations;
         display();
     }
 
@@ -119,10 +123,11 @@ var app = function() {
         addSpinner();
 
         if (current_address) {
-            getChurchesByAddress(current_address,current_denomination);
+            getChurchesByAddress(current_address,current_denominations);
         } else if (current_latitude && current_longitude) {
-            getChurchesByLocation(current_latitude, current_longitude, current_denomination);
+            getChurchesByLocation(current_latitude, current_longitude, current_denominations);
         } else {
+            changeURL();
             error('Please click "View Nearest Churches" or enter an address above.');
         }
 
@@ -131,19 +136,28 @@ var app = function() {
     var lookupAddress = function() {
        addSpinner();
        var address =  $('#address-field').val();
-       getChurchesByAddress(address,current_denomination);
+       getChurchesByAddress(address,current_denominations);
     }
 
     var changeURL = function() {
 
          var title;
          var url;
-         if (current_denomination) {
-            title = "Churches Nearby: " + current_denomination;
-            url = current_denomination;
+         if (current_denominations) {
+            denominations = current_denominations.split(",");
+            console.log(denominations.length);
+            if (denominations.length==1) {
+                console.log('one');
+                title = "Churches Nearby: " + current_denominations;
+                url = current_denominations;
+            } else {
+                console.log('morethanone');
+                title = "Churches Nearby: ";
+                url = '/';
+            }
          } else {
             title = "Churches Nearby: ";
-            url = '';
+            url = '/';
          }
 
          sendGAPageview(url,title);
@@ -155,7 +169,7 @@ var app = function() {
 
          var stateObj = {
             current_address: current_address,
-            current_denomination: current_denomination,
+            current_denominations: current_denominations,
             current_latitude: current_latitude,
             current_longitude: current_longitude
          };
@@ -163,7 +177,8 @@ var app = function() {
             title,
             url
                 + '?latitude=' + current_latitude + '&longitude=' + current_longitude  +
-                  '&address=' + current_address
+                  '&address=' + current_address +
+                  '&denominations=' + current_denominations
             );
 
     }
@@ -185,7 +200,7 @@ var app = function() {
         current_address = '';
 
         if (current_latitude && current_longitude) {
-            var churches = getChurchesByLocation(current_latitude,current_longitude,current_denomination);
+            var churches = getChurchesByLocation(current_latitude,current_longitude,current_denominations);
         }
 
     }
@@ -229,7 +244,7 @@ var app = function() {
         return getChurches('',latitude,longitude,denomination);
     }
 
-    var getChurches = function(address,latitude,longitude,denomination) {
+    var getChurches = function(address,latitude,longitude,denominations) {
 
         var endpoint = '/api/nearbyChurches';
         var request_type = 'GET';
@@ -238,7 +253,7 @@ var app = function() {
             var data = {
                 'latitude': latitude,
                 'longitude': longitude,
-                'denomination' : denomination,
+                'denominations' : denominations,
             }
             current_latitude = latitude;
             current_longitude = longitude;
@@ -246,14 +261,14 @@ var app = function() {
         } else {
             var data = {
                 'address': address,
-                'denomination': denomination,
+                'denominations': denominations,
             };
             current_latitude = '';
             current_longitude = '';
             current_address = address;
         }
 
-        current_denomination = denomination;
+        current_denominations = denominations;
         $.ajax({
             url: endpoint,
             type: request_type,
