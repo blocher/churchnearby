@@ -69,9 +69,9 @@ class MainController extends Controller {
 			}
 			
 
-		} catch (BadResponseException $e) {
+		} catch (\Exception $e) {
 			$results['status'] = 'error';
-			$results['error'] = 'There was an unknown error.  Please try again.';
+			$results['error'] = 'There was an error finding the specified address.  Please try a diffrent address';
 			return $results;
 		}
 
@@ -85,6 +85,10 @@ class MainController extends Controller {
 
 		if (Input::get('address')) {
 			$points = $this->geocode(Input::get('address'));
+			if ($points['status']!='ok') {
+
+				return $points;
+			}
 			if ($points) {
 				$latitude = $points['latitude'];
 				$longitude = $points['longitude'];
@@ -112,7 +116,7 @@ class MainController extends Controller {
 		$result['count'] = count( $result['churches'] );
 
 		$result['region'] = empty ($denomination) ? '' : $this->getRegion( $result['churches'] );
-
+		$results['status'] = 'ok';
 		return $result;
 
 	}

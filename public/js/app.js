@@ -35,8 +35,6 @@ var app = function() {
         denomination_summary = Handlebars.compile(source);
         Handlebars.registerPartial('denomination-summary',denomination_summary);
 
-        getDenominations();
-
         //Bind buttons
 
 
@@ -52,13 +50,15 @@ var app = function() {
         if (pathArray[1]) {
             current_denominations = pathArray[1];
         } else {
-            current_denominations = getParameterByName('current_denominations');
+            current_denominations = getParameterByName('denominations');
         }
 
         current_latitude = getParameterByName('latitude');
         current_longitude = getParameterByName('longitude');
         current_address = getParameterByName('address');
 
+
+        getDenominations();
         display();
 
         //Bind history change
@@ -88,12 +88,18 @@ var app = function() {
                     $('.denomination-button').click(function() {
                         changeDenomination($(this).data('denomination'));
                     });
+                    denominations = current_denominations.split(",");
+                    var i;
+                    for (i = 0; i < denominations.length; ++i) {
+                        console.log(denominations[i]);
+                        $('button.denomination-button[data-denomination="' + denominations[i] + '"]').addClass('active');
+                    }
                 } else {
-                    error("We couldn't find the denomiation list.  Please try again.");
+                    error("We couldn't find the denomination list.  Please try again.");
                 }
             },
             error: function(data) {
-               error("We couldn't find the denomiation list.   Please try again.");
+               error("We couldn't find the denomination list.   Please try again.");
             }
         });
 
@@ -121,8 +127,10 @@ var app = function() {
     var display = function() {
 
         addSpinner();
+        console.log(current_denominations);
 
         if (current_address) {
+            $('#address-field').val(current_address);
             getChurchesByAddress(current_address,current_denominations);
         } else if (current_latitude && current_longitude) {
             getChurchesByLocation(current_latitude, current_longitude, current_denominations);
@@ -145,13 +153,10 @@ var app = function() {
          var url;
          if (current_denominations) {
             denominations = current_denominations.split(",");
-            console.log(denominations.length);
             if (denominations.length==1) {
-                console.log('one');
                 title = "Churches Nearby: " + current_denominations;
                 url = current_denominations;
             } else {
-                console.log('morethanone');
                 title = "Churches Nearby: ";
                 url = '/';
             }
@@ -277,7 +282,7 @@ var app = function() {
                 if (status=='success' && data.status=="ok") {
                     render(data);
                 } else {
-                    error("We couldn't find that address.  Please try again.");
+                    error(data.error);
                 }
                 changeURL();
             },

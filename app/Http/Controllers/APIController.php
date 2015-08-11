@@ -50,7 +50,9 @@ class APIController extends Controller {
 
 			$controller = new $controller_name();
 			$result = $controller->$method();
-			$result['status'] = 'ok';
+			if (!isset($result['status'] )) {
+				$result['status'] = 'ok';
+			}
 
 		}
 
