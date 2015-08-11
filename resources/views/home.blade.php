@@ -17,7 +17,7 @@
 
 		<div class="row">
 
-			<div class="col-md-4">
+			<div class="col-md-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Current Location</div>
 					<div class="panel-body">
@@ -29,7 +29,7 @@
 
 			</div>
 
-			<div class="col-md-4">
+			<div class="col-md-6">
 				<div class="panel panel-default">
 				  	<div class="panel-heading">Lookup address</div>
 				  	<div class="panel-body">
@@ -42,16 +42,24 @@
 
 			</div>
 
-			<div class="col-md-4">
+		</div> <!-- row -->
+
+		<div class="row">
+			<div class="col-md-12">
 				<div class="panel panel-default">
 				  <div class="panel-heading">Denominations</div>
+				  <div class="panel-body">
+				  	<div class="alert alert-danger">
+				  		<span id="denomination_note"></span>&nbsp;
+				  		<a id='denomination_clear'>Clear</a>
+				  	</div>
+				  </div>
 				  <div class="panel-body" id="denominations">
 						<i class="fa fa-cog fa-spin"></i>
 				  </div>
 				</div>
 			</div>
-
-		</div> <!-- row -->
+		</div>
 
 		<div class="row">
 			<div class="col-md-12">

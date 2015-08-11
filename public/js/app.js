@@ -46,6 +46,10 @@ var app = function() {
             lookupNearest();
         });
 
+        $('#denomination_clear').click(function() {
+            clearDenominations();
+        });
+
         var pathArray = window.location.pathname.split( '/' );
         if (pathArray[1]) {
             current_denominations = pathArray[1];
@@ -56,7 +60,6 @@ var app = function() {
         current_latitude = getParameterByName('latitude');
         current_longitude = getParameterByName('longitude');
         current_address = getParameterByName('address');
-
 
         getDenominations();
         display();
@@ -94,6 +97,7 @@ var app = function() {
                         console.log(denominations[i]);
                         $('button.denomination-button[data-denomination="' + denominations[i] + '"]').addClass('active');
                     }
+                    updateDenominationNote();
                 } else {
                     error("We couldn't find the denomination list.  Please try again.");
                 }
@@ -113,6 +117,24 @@ var app = function() {
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
+    var updateDenominationNote = function() {
+        if (current_denominations=='') {
+            $('#denomination_note').html('You are currently showing all churches.  Choose the buttons below to filter.');
+            $('#denomination_clear').addClass('hidden');
+        } else {
+            $('#denomination_note').html('You are showing filtered results. ');
+            $('#denomination_clear').removeClass('hidden');
+        }
+    }
+
+    var clearDenominations = function() {
+
+        $('button.denomination-button').removeClass('active');
+        current_denominations = '';
+        updateDenominationNote();
+        display();
+    }
+
     var changeDenomination = function(denomination) {
         $('button.denomination-button[data-denomination="' + denomination + '"]').toggleClass('active');
         var denominations = [];
@@ -121,6 +143,7 @@ var app = function() {
         });
         denominations = denominations.join(',');
         current_denominations = denominations;
+        updateDenominationNote();
         display();
     }
 
