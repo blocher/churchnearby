@@ -5,3 +5,9 @@
 .spinner {
 	margin: 20px;
 }
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}

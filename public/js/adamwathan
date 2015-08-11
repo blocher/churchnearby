@@ -1,0 +1,4 @@
+Private funcitons to sepearate out logic
+If you need to access two properiteis/emthod sfrom another class, move funciton to that class
+return instead of temporary variable
+Pass in whole order

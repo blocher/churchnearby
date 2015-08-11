@@ -84,9 +84,9 @@ class MainController extends Controller {
 		$latitude = $longitude = '';
 
 		if (Input::get('address')) {
+			$address = Input::get('address');
 			$points = $this->geocode(Input::get('address'));
 			if ($points['status']!='ok') {
-
 				return $points;
 			}
 			if ($points) {
@@ -94,6 +94,7 @@ class MainController extends Controller {
 				$longitude = $points['longitude'];
 			}
 		} else {
+			$address = '';
 			$latitude = floatval(Input::get('latitude'));
 			$longitude = floatval(Input::get('longitude'));
 		}
@@ -111,6 +112,7 @@ class MainController extends Controller {
 
 		$result = \App\Models\Church::nearbyChurches($latitude, $longitude, $count, $denominations);
 
+		$result['address'] = $address;
 		$result['latitude'] = $latitude;
 		$result['longitude'] = $longitude;
 		$result['count'] = count( $result['churches'] );

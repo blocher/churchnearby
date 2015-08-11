@@ -94,7 +94,6 @@ var app = function() {
                     denominations = current_denominations.split(",");
                     var i;
                     for (i = 0; i < denominations.length; ++i) {
-                        console.log(denominations[i]);
                         $('button.denomination-button[data-denomination="' + denominations[i] + '"]').addClass('active');
                     }
                     updateDenominationNote();
@@ -335,7 +334,7 @@ var app = function() {
 
         element = $(element);
         var spinnerImg = $('<i class="spinner fa fa-spin fa-spinner fa-4x"></i>');
-        spinnerImg.prependTo(element);
+        element.html(spinnerImg);
     
     };
 
