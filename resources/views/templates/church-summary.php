@@ -11,7 +11,7 @@
     <p class="list-group-item-text">{{ city }}, {{ state }} {{ zip}}<br></p>
     <p class="list-group-item-text">Leader: {{ leader }}</p>
     <p class="list-group-item-text">{{ phone}}</p>
-    <p><a target="_blank" href="http://maps.google.com/maps?f=q&amp;hl=en&amp;saddr={{ latitude }},{{ longitude }}&amp;daddr={{ latitude }},{{longitude }}">Driving directions</a>
+    <p><a target="_blank" href="http://maps.google.com/maps?f=q&amp;hl=en&amp;saddr={{#if parent.address}}{{ parent.address }}{{else}}{{ parent.latitude}},{{ parent.longitude}}{{/if}}&amp;daddr={{ latitude }},{{longitude }}"><span class="fa fa-globe"> Driving directions</a>
     <p></p>
   </li>
 </script>

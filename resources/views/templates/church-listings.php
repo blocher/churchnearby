@@ -6,7 +6,9 @@
 	  {{/if}}
       <h4>Closest churches to <strong><em>{{#if address}} {{ address }} {{else}} your current location{{/if}}</em></strong></h4>
        {{#each churches }}
-        {{> church_summary }}
+         
+            {{> church_summary parent=.. }}
+      
        {{/each }}
   </div>
 </script>
