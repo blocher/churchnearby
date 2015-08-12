@@ -1,6 +1,13 @@
 <script id="church-summary" type="text/x-handlebars-template">
   <li class="list-group-item">
-    <h4 class="list-group-item-heading" id="list-group-item-heading"><a target="_blank" href="{{ url }}">{{{ name }}}</a> <span class="badge">{{ region.denomination.tag_name }}</span></a></h4>
+    <h4 class="list-group-item-heading" id="list-group-item-heading">
+    {{#if url }}
+        <a target="_blank" href="{{ url }}">{{{ name }}}</a>
+    {{else}}
+        {{{ name }}}
+    {{/if}}
+    &nbsp;<span class="badge">{{ region.denomination.tag_name }}</span>
+    </h4>
     <p class="list-group-item-text"><strong>{{ distance_in_miles }} miles away</strong></p>
     <p class="external_id hidden">{{ external_id }}</p>
     <p class="internal_id hidden">{{ id }}</p>
