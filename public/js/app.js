@@ -118,10 +118,8 @@ var app = function() {
 
     var updateDenominationNote = function() {
         if (current_denominations=='') {
-            $('#denomination_note').html('You are currently showing all churches.  Choose the buttons below to filter.');
             $('#denomination_clear').addClass('hidden');
         } else {
-            $('#denomination_note').html('You are showing filtered results. ');
             $('#denomination_clear').removeClass('hidden');
         }
     }
@@ -149,16 +147,14 @@ var app = function() {
     var display = function() {
 
         addSpinner();
-        console.log(current_denominations);
 
-        if (current_address) {
-            $('#address-field').val(current_address);
+        if (current_address && current_address!='') {
             getChurchesByAddress(current_address,current_denominations);
         } else if (current_latitude && current_longitude) {
             getChurchesByLocation(current_latitude, current_longitude, current_denominations);
         } else {
             changeURL();
-            error('Please click "View Nearest Churches" or enter an address above.');
+            error('Please click "View Nearest Churches" or enter an address above.','warning');
         }
 
     }
@@ -241,14 +237,23 @@ var app = function() {
 
     }
 
-    var error = function(message) {
-          $('#content').html('<div class="alert alert-danger" role="alert">' + message + "</div>");
+    var error = function(message,alertclass) {
+          if (alertclass==undefined) {
+            alertclass = 'danger';
+          }
+          $('#content').html('<div class="alert alert-' + alertclass + '" role="alert">' + message + "</div>");
     }
 
     /*
      * Render a list of churches
      */
     var render = function(churches,element) {
+
+        if (current_address) {
+            $('#address-field').val(current_address);
+        } else {
+            $('#address-field').val('');
+        }
         
         if (!element) {
             element = '#content';
@@ -261,6 +266,7 @@ var app = function() {
         } else {
              $('#denomination').html("");
         }
+
     };
 
     var getChurchesByAddress = function(address,denomination) {

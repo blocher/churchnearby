@@ -11,3 +11,20 @@
     vertical-align: middle;
     float: none;
 }
+
+
+.denomination-button:before {
+
+	font-family: FontAwesome;
+    content: "\f096";
+
+  
+}
+
+.denomination-button.active:before {
+
+	font-family: FontAwesome;
+    content: "\f046";
+
+  
+}
