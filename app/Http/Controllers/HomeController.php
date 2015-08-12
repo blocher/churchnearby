@@ -21,12 +21,21 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-	
-		$denominations = \App\Models\Denomination::orderBy('name','ASC')->get();
-
 		return view('home')
-			->with('denominations',$denominations)
+			->with('cover_photo',self::random_pic());
 		;
+	}
+
+
+	public static function random_pic($dir='')
+	{
+		$dir = public_path().'/img/cover';
+	    $files = glob($dir . '/*.*');
+	    $file = array_rand($files);
+	    $file = $files[$file];
+	    $file = explode('/',$file);
+	    $file = array_pop($file);
+	    return $file;
 	}
 
 	

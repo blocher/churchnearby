@@ -28,3 +28,13 @@
 
   
 }
+
+.jumbotron {
+    margin: 0px 15px 0px 15px;
+    background-image: url(../img/cover/1.jpg);
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    text-shadow: black 0.3em 0.3em 0.3em;
+}

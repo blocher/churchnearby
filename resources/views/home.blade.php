@@ -1,21 +1,24 @@
 @extends('app')
 
 @section('content')
+
+
+
 	<div class="container">
 
-		<div class="row">
-			<div class="col-md-12">
-				<div class="page-header">
-					  <h1>
-					  	Nearest Churches
-					 </h1>
-					 <div id="denomination"></div>
-				</div>
-			</div>
-		</div> <!--row -->
+			 <div class="jumbotron" style="background-image: url('img/cover/{{ $cover_photo }}')">
+		      <div class="container">
+		        <h1><span class="fa fa-location-arrow"> Nearest Church</h1>
+		        <p>Quickly find the closest churches where you are now or where you plan to go.</p>
+		      </div>
+		    </div>
 
+		    <div class="col-md-12">
 
-			
+		    	<div class="row">
+		    		&nbsp;
+		    	</div>
+		    </div>
 
 			<div class="col-md-9">
 
