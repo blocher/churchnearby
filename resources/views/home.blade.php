@@ -20,7 +20,27 @@
 		    	</div>
 		    </div>
 
-			<div class="col-md-9">
+
+			<div class="col-md-3 col-lg-push-9">
+
+				  	<div class="panel panel-success">
+				  		<div class="panel-heading">Filter by denomination</div>
+			
+					 	 <div class="panel-body">
+							<div id="denominations">
+								<i class="fa fa-cog fa-spin"></i>
+							</div>
+							 <div id='denomination_clear' class="alert alert-warning">
+						  		<a><span class='fa fa-remove'></span> Remove filters</a>
+					  		</div>
+					  	</div>
+
+					 </div>
+
+
+			</div>
+
+			<div class="col-md-9 col-lg-pull-3">
 
 					
 				<div class="row">
@@ -59,24 +79,6 @@
 			</div>
 
 
-			<div class="col-md-3">
-
-				  	<div class="panel panel-success">
-				  		<div class="panel-heading">Filter by denomination</div>
-			
-					 	 <div class="panel-body">
-							<div id="denominations">
-								<i class="fa fa-cog fa-spin"></i>
-							</div>
-							 <div id='denomination_clear' class="alert alert-warning">
-						  		<a><span class='fa fa-remove'> Remove filters</a>
-					  		</div>
-					  	</div>
-
-					 </div>
-
-
-			</div>
 
 		
 
