@@ -57,7 +57,7 @@ class APIController extends Controller {
 		}
 
 		$callback = Input::get('callback');
-
+		header("Access-Control-Allow-Origin: *");
 		if (empty($callback)) {
 			return response()->json($result);
 		} else {
@@ -70,8 +70,5 @@ class APIController extends Controller {
 		return $this->json('main',$method);
 	}
 
-	public function jsonpDefaultController($method) {
-		return $this->jsonp('main',$method);
-	}
 
 }
