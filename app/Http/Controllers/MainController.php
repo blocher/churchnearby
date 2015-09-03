@@ -130,4 +130,16 @@ class MainController extends Controller {
 		$result['denominations'] = $denominations;
 		return $result;
 	}
+
+	public function randomPic($dir='')
+	{
+		$dir = public_path().'/img/cover';
+	    $files = glob($dir . '/*.*');
+	    $file = array_rand($files);
+	    $file = $files[$file];
+	    $file = explode('/',$file);
+	    $file = array_pop($file);
+
+	    return ['photo_url'=>asset('img/cover/'.$file)];
+	}
 }

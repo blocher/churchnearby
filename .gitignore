@@ -3,3 +3,4 @@
 .env
 notesfrommathias.txt
 mobile/*
+.DS_Store
