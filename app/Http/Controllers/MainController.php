@@ -118,7 +118,28 @@ class MainController extends Controller {
 		$result['count'] = count( $result['churches'] );
 
 		$result['region'] = empty ($denomination) ? '' : $this->getRegion( $result['churches'] );
-		$results['status'] = 'ok';
+		$result['status'] = 'ok';
+		return $result;
+
+	}
+
+	public function church() {
+	
+		$result['status'] = 'ok';
+
+		if (Input::get('id')) {
+			$church = \App\Models\Church::find(Input::get('id'));
+			if ($church!=false) {
+				$result['church'] = $church;
+			} else {
+				$result['status'] = 'error';
+				$result['error'] = 'No church with supplied ID found.';
+			}
+		} else {
+			$result['status'] = 'error';
+			$result['error'] = 'You must supply an ID.';
+			
+		}
 		return $result;
 
 	}
