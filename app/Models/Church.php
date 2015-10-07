@@ -12,10 +12,22 @@ class Church extends Model {
 	protected $table = 'churches';
 	public $timestamps = true;
 
+	public $full_address;
+	public $full_address_encoded;
+
 	use SoftDeletes;
 
 	protected $dates = ['deleted_at'];
 	protected $fillable = array('externalid', 'leader', 'latitude', 'longitude', 'name', 'url', 'address', 'city', 'state', 'zip', 'email', 'phone', 'twitter', 'facebook');
+
+	public function toArray()
+    {
+        $array = parent::toArray();
+        $array['full_address'] =  $this->address . ' ' . $this->city . ', ' . $this->state . ' ' . $this->zip;
+        $array['full_address_encoded'] = $this->full_address_encoded = urlencode(str_replace('&', '', $array['full_address']));
+        return $array;
+
+    }
 
 	public function region()
 	{

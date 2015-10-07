@@ -128,7 +128,7 @@ class MainController extends Controller {
 		$result['status'] = 'ok';
 
 		if (Input::get('id')) {
-			$church = \App\Models\Church::find(Input::get('id'));
+			$church = \App\Models\Church::with('region')->with('region.denomination')->find(Input::get('id'));
 			if ($church!=false) {
 				$result['church'] = $church;
 			} else {
