@@ -11,6 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/{denomination}', 'HomeController@index');
+Route::get('/', 'HomeController@index');
+Route::get('/api/nearbyChurchesView', 'MainController@nearbyChurchesView');
+
+Route::get('/api/{controller}/{function}', 'APIController@json');
+Route::get('/api/{function}', 'APIController@jsonDefaultController');
+
+Route::resource('church', 'ChurchController');
+Route::resource('denomination', 'DenominationController');
+Route::resource('region', 'RegionController');
