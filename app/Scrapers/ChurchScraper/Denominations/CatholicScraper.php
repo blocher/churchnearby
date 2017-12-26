@@ -5,7 +5,7 @@ use Sunra\PhpSimple\HtmlDomParser;
 class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 
 
-	private $url = 'http://www.thecatholicdirectory.com/';
+	private $url = 'https://www.thecatholicdirectory.com/';
 
 	protected $denomination_slug = 'catholic';
 	protected $denomination_id;
@@ -81,7 +81,7 @@ class CatholicScraper extends \App\Scrapers\ChurchScraper\ChurchScraper {
 		$url = $this->url . 'index.cfm';
 		$response = $this->get($url);
 		$html  = HtmlDomParser::str_get_html($response);
-		$items = $html->find('#_USA_Image_Map area');
+		$items = $html->find('#USA_Image_Map area');
 		$states = [];
 		foreach($items as $item) {
 			$states[] = $item->href;
