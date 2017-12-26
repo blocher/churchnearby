@@ -83,7 +83,11 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		if (empty($church->region_id)) {
 			echo 'ERROR: ' . $church->name . PHP_EOL;
 		} else {
-			$church->save();
+			try {
+				$church->save();
+			} catch (\Exception $e) {
+				$this->log($e->getMessage());
+			}
 		}
 		return $church;
 	}
@@ -106,7 +110,12 @@ abstract class ChurchScraper extends \App\Scrapers\Scraper {
 		$denomination->region_name_plural = $this->getDenominationRegionNamePlural();
 		$denomination->tag_name = $this->getDenominationTagName();
 		$denomination->color = $region_name_plural = $this->getDenominationColor();
-		$denomination->save();
+		try {
+			$denomination->save();
+		} catch (\Exception $e) {
+			$this->log($e->getMessage());
+		}
+		
 		return $denomination->id;
 	}
 

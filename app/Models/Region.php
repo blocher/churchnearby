@@ -13,7 +13,7 @@ class Region extends Model {
 	use SoftDeletes;
 
 	protected $dates = ['deleted_at'];
-	protected $fillable = array('long_name', 'short_name', 'url', 'denomination_id', 'slug');
+	protected $fillable = array('long_name', 'short_name', 'url', 'denomination_id', 'slug', 'external_id');
 
 	public function denomination()
 	{
